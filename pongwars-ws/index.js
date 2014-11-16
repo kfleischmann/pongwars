@@ -21,14 +21,14 @@ io.on('connection', function(socket){
         "master": master
     };
     console.info('sending master ' + master + ' to id=' + socket.id + ').');
-    socket.emit(init_data);
+    socket.emit('init', init_data);
 
     if (clients.length == 2) {
         // send start signal
         data = {
             "action": 'start'
         };
-        io.emit('message', data);
+        io.emit('action', data);
     }
 
     // handle disconnection

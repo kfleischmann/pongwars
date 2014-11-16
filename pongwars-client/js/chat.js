@@ -3,9 +3,12 @@ jQuery(document).ready(function($){
 
     // handle messages
     socket.on('message', function(msg){
-        //console.log('got message: ' + msg);
-
         $( "#chat_window" ).append(msg + "<br>");
+    });
+
+    // handle init
+    socket.on('init', function(msg){
+        $( "#debug" ).append('INIT: master=' + msg.master + "<br>");
     });
 
     $( "#send" ).click(function() {
