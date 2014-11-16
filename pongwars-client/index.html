@@ -10,8 +10,23 @@
 	<script type="text/javascript">
 
 		window.onload = function () {
+			var is_master = false;
+			var user = "user-"+(Math.floor(Math.random() * 100) + 1);
 			var pong = new Pong(document.getElementById('pong'));
 			var socket = io(':3000');
+		
+    			socket.on('connect',function() {
+				socket.emit("message", { user_id : user } );
+			 });	
+			socket.on('message', function(msg){
+				if( msg.is_master != null ){
+					is_master=true;
+				}
+				if( msg.user_id != null ){
+					console.log("do something");	
+				}
+				console.log(msg);
+			});
 
 			function resize () {
 				var gameHeight = window.innerHeight - 40 + 'px';
@@ -33,10 +48,10 @@
 				'down': 'down',
 			});
 
-			// Add behaviour for player B
 			pong.on('update', function () {
-
-				socket.emit('message', "pos:"+pong.players.a.y);
+				var player = pong.players.a;
+				if(!is_master) player = pong.players.b;
+				socket.emit('message', {user_id: user, paddel: player.y, ball: {x: pong.balls[0].x, y:pong.balls[0].y }} );
 
 				 //if (pong.players.b.y < pong.balls[0].y) {
 			        //	pong.players.b.move(1);
@@ -48,6 +63,7 @@
 			
 		};
 
+
 	</script>
 </head>
 <body>
@@ -55,6 +71,5 @@
 	<div class="panel">
 		Move with [ UP ], [ DOWN ]
 	</div>
-
 </body>
 </html>
