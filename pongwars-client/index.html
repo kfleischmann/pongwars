@@ -11,8 +11,7 @@
 
 		window.onload = function () {
 			var pong = new Pong(document.getElementById('pong'));
-			var socket = io('http://localhost:3000');
-			socket.emit('message', "pos:10:20");
+			var socket = io(':3000');
 
 			function resize () {
 				var gameHeight = window.innerHeight - 40 + 'px';
