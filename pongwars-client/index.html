@@ -6,7 +6,6 @@
 	<script type="text/javascript" src="pong/Pong.js"></script>
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-	<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	<script type="text/javascript">
 
@@ -53,21 +52,6 @@
 			
 		};
 
-	 $(function() {
-	    $( "#dialog-confirm" ).dialog({
-	      resizable: false,
-	      height:140,
-	      modal: true,
-	      buttons: {
-	        "Delete all items": function() {
-	          $( this ).dialog( "close" );
-	        },
-	        Cancel: function() {
-	          $( this ).dialog( "close" );
-	        }
-	      }
-	    });
-	  });
 
 	</script>
 </head>
@@ -76,13 +60,5 @@
 	<div class="panel">
 		Move with [ UP ], [ DOWN ]
 	</div>
-
-	<div id="dialog-confirm" title="Empty the recycle bin?">
-		  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
-	</div>
- 
-	<p>Sed vel diam id libero <a href="http://example.com">rutrum convallis</a>. Donec aliquet leo vel magna. Phasellus rhoncus faucibus ante. Etiam bibendum, enim faucibus aliquet rhoncus, arcu felis ultricies neque, sit amet auctor elit eros a lectus.</p>
- 
-
 </body>
 </html>
