@@ -40,7 +40,7 @@
 
 			pong.on('update', function () {
 
-				socket.emit('message', "pos:"+pong.players.a.y);
+				socket.emit('message', "{user="+user+", pos:"+pong.players.a.y+"}");
 
 				 //if (pong.players.b.y < pong.balls[0].y) {
 			        //	pong.players.b.move(1);
