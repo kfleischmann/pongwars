@@ -15,6 +15,7 @@
 			var user = "user-"+(Math.floor(Math.random() * 100) + 1);
 			var pong = new Pong(document.getElementById('pong'));
 			var socket = io('pong-wars.com:3000');
+			var msg = null;
 
 			function ball_disable(){
 				pong.balls[0].disable(true);
@@ -96,7 +97,7 @@
 				if(start){
 					var player = pong.players.a;
 					if(!is_master) player = pong.players.b;
-					socket.emit('message', {user_id: user, paddle: player.y, ball: {x: pong.balls[0].x, y:pong.balls[0].y }} );
+					msg =  {user_id: user, paddle: player.y, ball: {x: pong.balls[0].x, y:pong.balls[0].y }};
 
 					//slave_update(pos);
 					//master_update(pos);
@@ -106,6 +107,12 @@
 			pong.on('reset', function() {
 				
 			});
+
+			setInterval( function(){ 
+				if( msg != null ){
+					socket.emit('message', msg );
+				};
+			}, 100);
 			
 		};
 
