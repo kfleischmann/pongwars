@@ -15,63 +15,53 @@
 			var pong = new Pong(document.getElementById('pong'));
 			var socket = io('pong-wars.com:3000');
 
-			function game_start(){	
-				pong.start();
-				console.log("start");
-				if(is_master){
-		                        pong.players.a.addControls({
-        		                        'up': 'up',
-                		                'down': 'down',
-                        		});
-				} else {
-		                        pong.players.b.addControls({
-        	                        'up': 'up',
-                	                'down': 'down',
-                        		});
-
-					pong.balls[0].updatePosition = function(){};
-
-				}
-
+			function ball_disable(){
+				pong.balls[0].disable(true);
 			}
 
+			function ball_position(px,py){	
+				pong.balls[0].position( px, py );
+			}
 
-			function game_update(msg){
-				if(is_master){
-					pong.players.b.y = msg.paddel;
-				} else {
-					// update ball
-					pong.balls[0].x = msg.ball.x;	
-					pong.balls[0].y = msg.ball.y;
-					// update player 
-					pong.players.a.y = msg.paddel;
-				}
+			function set_master(){
+				pong.players.a.addControls({
+                                     'up': 'up',
+                                     'down': 'down',
+                              });
+				
+			}
+
+			function set_slave(){
+		                pong.players.b.addControls({
+        	                        'up': 'up',
+                	                'down': 'down',
+                        	});
+				ball_disable();
+				
+			}
+						
+			function slave_update(paddel){
+				pong.players.b.y = paddel;
+			}
+
+			function master_update(paddel){
+				pong.players.a.y = paddel;
 			}
 		
     			socket.on('connect',function() {
 				socket.emit("message", { user_id : user } );
-			 });	
+			 });
+			socket.on('init', function(msg){
+				is_master=msg.master;
+				console.log("master?: "+is_master);
+			});
+			socket.on('action', function(msg){
+				console.log("action:"+msg.action);
+				if( msg.action == 'start' ){
+					pong.start();	
+				}
+			});
 			socket.on('message', function(msg){
-				if( msg.master != null ){
-					if ( msg.master == true ){
-						master=true;
-						console.log("i am the master");
-					}
-					else {
-						console.log("i am the slave");
-					}
-				}
-				if( msg.user_id != null ){
-					game_update(msg);
-					console.log("update game-state");
-					
-				}
-				if( msg.action != null ) {
-					if( msg.action == "start" ){
-						game_start();
-					}
-				}
-
 				console.log(msg);
 			});
 
@@ -84,19 +74,25 @@
 
 			resize();
 			window.onresize = resize;
+			pong.on('start', function() {
+				if( is_master ) {
+					set_master();
+				} else {
+					set_slave();
+				}
 
-			pong.on('update', function () {
+			});
+			var pos=0;
+			pong.on('beforeupdate', function () {
 				var player = pong.players.a;
 				if(!is_master) player = pong.players.b;
 				socket.emit('message', {user_id: user, paddel: player.y, ball: {x: pong.balls[0].x, y:pong.balls[0].y }} );
 
-				 //if (pong.players.b.y < pong.balls[0].y) {
-			        //	pong.players.b.move(1);
-				// } else if (pong.players.b.y > pong.balls[0].y) {
-	        		//	pong.players.b.move(-1);
-				// }
-    			 })
-
+				//pos+=1;
+				//slave_update(pos);
+				//master_update(pos);
+				//ball_position(0,pos);
+			});
 			
 		};
 

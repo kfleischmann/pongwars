@@ -2069,6 +2069,7 @@ Ball = function (game, options) {
     this.setVelocity(options.velocity || [config.BALL_SPEED, config.BALL_SPEED]);
     this.lastUpdate = new Date().getTime();
     this.removed = false;
+    this.disabled = false;
     this.color = parseOctal(options.color) || config.BALL_COLOR;
 
     this.graphics = new pixi.Graphics();
@@ -2160,13 +2161,20 @@ Ball.prototype.render = function () {
 Ball.prototype.refresh = function () {
     this.render();
 };
+Ball.prototype.disable = function(val){
+   this.disabled = val;
+};
+Ball.prototype.position = function(px,py){
+   this.x = px;
+   this.y = py;
+};
 
 Ball.prototype.updatePosition = function () {
     var elapsed = new Date().getTime() - this.lastUpdate;
-
-    this.x += (elapsed / 50) * this.velocity.x;
-    this.y += (elapsed / 50) * this.velocity.y;
-
+    if(!this.disabled){
+	    this.x += (elapsed / 50) * this.velocity.x;
+	    this.y += (elapsed / 50) * this.velocity.y;
+    }
 };
 
 Ball.prototype.update = function () {
