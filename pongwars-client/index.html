@@ -14,7 +14,7 @@
 			var is_master = false;
 			var user = "user-"+(Math.floor(Math.random() * 100) + 1);
 			var pong = new Pong(document.getElementById('pong'));
-			var socket = io('pong-wars.com:3000');
+			var socket = io(':3000');
 			var msg = null;
 
 			function ball_disable(){
@@ -71,9 +71,7 @@
 				}
 				else {
 					slave_update(msg.paddle);
-				}
-				
-				console.log(msg);
+				}	
 			});
 
 			function resize () {
@@ -112,7 +110,7 @@
 				if( msg != null ){
 					socket.emit('message', msg );
 				};
-			}, 100);
+			}, 30);
 			
 		};
 
