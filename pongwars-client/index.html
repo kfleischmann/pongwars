@@ -7,24 +7,49 @@
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="styles.css">
-	<script type="text/javascript">
+	<script type="text/javascript">		
 
 		window.onload = function () {
 			var is_master = false;
 			var user = "user-"+(Math.floor(Math.random() * 100) + 1);
 			var pong = new Pong(document.getElementById('pong'));
 			var socket = io(':3000');
+
+			function game_start(){	
+				pong.start();
+				console.log("start");
+			}
+			function game_update(msg){
+				if(is_master){
+					pong.players.b.y = msg.paddel;
+				} else {
+					// update ball
+					pong.balls[0].x = msg.ball.x;				
+					pong.balls[1].y = msg.ball.y;
+					// update player 
+					pong.players.a.y = msg.paddel;
+				}
+			}
 		
     			socket.on('connect',function() {
 				socket.emit("message", { user_id : user } );
 			 });	
 			socket.on('message', function(msg){
-				if( msg.is_master != null ){
+				if( msg.is_master != null && msg.is_master == true ){
 					is_master=true;
+					console.log("i am the master");
 				}
 				if( msg.user_id != null ){
-					console.log("do something");	
+					game_update();
+					console.log("update game-state");
+					
 				}
+				if( msg.action != null ) {
+					if( msg.action == "start" ){
+						game_start();
+					}
+				}
+
 				console.log(msg);
 			});
 
