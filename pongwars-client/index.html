@@ -24,8 +24,8 @@
 					pong.players.b.y = msg.paddel;
 				} else {
 					// update ball
-					pong.balls[0].x = msg.ball.x;				
-					pong.balls[1].y = msg.ball.y;
+					pong.balls[0].x = msg.ball.x;	
+					pong.balls[0].y = msg.ball.y;
 					// update player 
 					pong.players.a.y = msg.paddel;
 				}
@@ -40,7 +40,7 @@
 					console.log("i am the master");
 				}
 				if( msg.user_id != null ){
-					game_update();
+					game_update(msg);
 					console.log("update game-state");
 					
 				}
