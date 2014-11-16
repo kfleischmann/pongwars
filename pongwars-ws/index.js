@@ -2,6 +2,12 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+var args = process.argv.slice(2);
+if ( args.indexOf('debug') ) {
+    console.log = function() {};
+    console.info = function() {};
+}
+
 clients = [];
 
 io.on('connection', function(socket){
@@ -10,10 +16,20 @@ io.on('connection', function(socket){
     console.info('user joined (id=' + socket.id + ').');
 
     // send initialization data
+    master = clients.length == 1;
     init_data = {
-        "master": clients.length == 1
+        "master": master
     };
+    console.info('sending master ' + master + ' to id=' + socket.id + ').');
     socket.emit(init_data);
+
+    if (clients.length == 2) {
+        // send start signal
+        data = {
+            "action": 'start'
+        };
+        io.emit('message', data);
+    }
 
     // handle disconnection
     socket.on('disconnect', function() {
