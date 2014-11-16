@@ -6,8 +6,10 @@ var io = require('socket.io')(http);
 
 io.on('connection', function(socket){
   console.log('new user')
+  io.emit('message', { is_master : true});
   socket.on('message', function(msg){
-    console.log('message: ' + msg);
+    console.log('message: ' + JSON.stringify(msg));
+	
   });
 });
 
