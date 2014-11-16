@@ -13,12 +13,29 @@
 			var is_master = false;
 			var user = "user-"+(Math.floor(Math.random() * 100) + 1);
 			var pong = new Pong(document.getElementById('pong'));
-			var socket = io(':3000');
+			var socket = io('pong-wars.com:3000');
 
 			function game_start(){	
 				pong.start();
 				console.log("start");
+				if(is_master){
+		                        pong.players.a.addControls({
+        		                        'up': 'up',
+                		                'down': 'down',
+                        		});
+				} else {
+		                        pong.players.b.addControls({
+        	                        'up': 'up',
+                	                'down': 'down',
+                        		});
+
+					pong.balls[0].updatePosition = function(){console.log("new position overriden");};
+
+				}
+
 			}
+
+
 			function game_update(msg){
 				if(is_master){
 					pong.players.b.y = msg.paddel;
@@ -35,9 +52,14 @@
 				socket.emit("message", { user_id : user } );
 			 });	
 			socket.on('message', function(msg){
-				if( msg.is_master != null && msg.is_master == true ){
-					is_master=true;
-					console.log("i am the master");
+				if( msg.master != null ){
+					if ( msg.master == true ){
+						master=true;
+						console.log("i am the master");
+					}
+					else {
+						console.log("i am the slave");
+					}
 				}
 				if( msg.user_id != null ){
 					game_update(msg);
@@ -62,16 +84,6 @@
 
 			resize();
 			window.onresize = resize;
-
-			pong.players.a.addControls({
-				'up': 'w',
-				'down': 's',
-			});
-
-			pong.players.b.addControls({
-				'up': 'up',
-				'down': 'down',
-			});
 
 			pong.on('update', function () {
 				var player = pong.players.a;

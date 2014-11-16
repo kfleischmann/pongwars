@@ -2167,13 +2167,13 @@ Ball.prototype.updatePosition = function () {
     this.x += (elapsed / 50) * this.velocity.x;
     this.y += (elapsed / 50) * this.velocity.y;
 
-    this.graphics.position.x = this.game.renderer.width / 2 + this.x;
-    this.graphics.position.y = this.game.renderer.height / 2 + this.y;
 };
 
 Ball.prototype.update = function () {
     if (!this.removed) {
         this.updatePosition();
+    	this.graphics.position.x = this.game.renderer.width / 2 + this.x;
+    	this.graphics.position.y = this.game.renderer.height / 2 + this.y;
         this.lastUpdate = new Date().getTime();
         this.checkCollisions();
     }
