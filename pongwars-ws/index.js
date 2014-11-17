@@ -28,6 +28,7 @@ io.on('connection', function(socket){
         data = {
             "action": 'start'
         };
+        console.info('sending start to all');
         io.emit('action', data);
     }
 
@@ -42,16 +43,31 @@ io.on('connection', function(socket){
 
     // handle messages
     socket.on('message', function(msg){
-        console.info('user message (id=' + socket.id + '): ' + msg);
+        console.info('user message (id=' + socket.id + '): ');
+        console.log(msg);
 
         // stream messages to other client
         for (i = 0; i < clients.length; i++) {
             if (clients[i].id != socket.id) {
-                console.info('sending message to id=' + clients[i].id + ': ' + msg);
+                console.info('sending message to id=' + clients[i].id + ': ');
+                console.log(msg);
+
                 clients[i].emit('message', msg);
                 break; // we assume only two players at the moment
             }
         }
+    });
+
+    // handle echo messages
+    socket.on('echo', function(msg){
+        console.info('echo message (id=' + socket.id + '): ');
+        console.log(msg);
+
+        // stream messages back to client
+        console.info('echo message back to id=' + socket.id + ': ');
+        console.log(msg);
+
+        socket.emit('echo', msg);
     });
 });
 
