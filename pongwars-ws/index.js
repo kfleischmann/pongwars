@@ -39,6 +39,13 @@ io.on('connection', function(socket){
             clients.splice(index, 1);
             console.info('user left (id=' + socket.id + ')');
         }
+
+        // send stop signal
+        data = {
+            "action": 'stop'
+        };
+        console.info('sending stop to all');
+        io.emit('action', data);
     });
 
     // handle messages
