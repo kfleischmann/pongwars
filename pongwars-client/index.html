@@ -3,29 +3,31 @@
 <head>
 	<title>pongwars</title>
 
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="pong/Pong.js"></script>
-	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	<script type="text/javascript">
 
-        var action1 = new Action("shrink-paddle",
-                function(){
-                   // otherPlayer.paddlee.size = 2
-                },
-                function(){
-                    //
-                },
-                function(){
-                    //otherPlayer.paddlee.size = 2
-                });
+        var factory = new ActionFactory("shrink-paddle");
+
+        factory.on('create', function(action){
+           console.log("action created "+action.actionId  );
+        });
+
+        factory.on('destroy', function(action){
+            console.log("action destroy "+action.actionId  );
+        });
+        var action1 = factory.create();
+        var action2 = factory.create();
+
+        action1.destroy();
+        action2.destroy();
 
 
-        console.log( action1.create().actionId );
-        console.log( action1.create().actionId );
-        console.log( action1.create().actionId );
 
-		window.onload = function () {
+
+        window.onload = function () {
 			var start=false;
 			var is_master = false;
 			var user = "user-"+(Math.floor(Math.random() * 100) + 1);
@@ -98,12 +100,6 @@
 				} else {
 					set_slave();
 				}
-
-                pong.players.b.addAction(action1.create());
-                pong.players.b.addAction(action1.create());
-                pong.players.b.addAction(action1.create());
-
-
             });
 			pong.on('beforeupdate', function () {
 				if(start){
