@@ -9,7 +9,7 @@
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	<script type="text/javascript">
 
-        var factory = new ActionFactory("shrink-paddle");
+        var factory = new ActivityFactory("shrink-paddle");
 
         factory.on('create', function(action){
            console.log("action created "+action.actionId  );
@@ -23,8 +23,6 @@
 
         action1.destroy();
         action2.destroy();
-
-
 
 
         window.onload = function () {
