@@ -2534,6 +2534,10 @@ Player = function (game, options) {
     this.score = 0;
     this.scoreDisplay = new ScoreDisplay(this);
     this.color = config.PLAYER_COLOR;
+    this.unused_actions = [];
+    this.used_actions = [];
+
+    // actions
 
     if (options.side !== 'left' && options.side !== 'right') {
         this.side = 'left';
@@ -2548,6 +2552,16 @@ Player = function (game, options) {
 };
 
 Player.prototype = new EventEmitter();
+
+Player.prototype.addAction = function (action) {
+    this.unused_actions.push(action);
+};
+
+Player.prototype.useAction = function (actionId ) {
+
+    // this.unused_actions
+
+};
 
 Player.prototype.addControls = function (controls) {
     this.keyboard.addControls(controls);
@@ -2687,7 +2701,38 @@ Player.prototype.setY = function (y) {
 
 module.exports = Player;
 
-},{"./Keyboard":77,"./ScoreDisplay":82,"./config":84,"./utils":86,"event-emitter":5,"geometry":27,"pixi":50}],81:[function(require,module,exports){
+},{"./Keyboard":77,"./ScoreDisplay":82,"./config":84,"./utils":86,"event-emitter":5,"geometry":27,"pixi":50}],
+100:[function(require,module,exports){
+    var Action;
+
+    var guid = (function() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return function() {
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+            s4() + '-' + s4() + s4() + s4();
+        };
+    })();
+
+    Action = function (name, onstart, onupdate, onend) {
+        this.actionId = "no-instance";
+        this.name = name;
+        this.onstart = onstart;
+        this.onupdate = onupdate;
+        this.onend = onend;
+    };
+
+    Action.prototype.create = function(){
+        var newObject = jQuery.extend(true, {}, this);
+        newObject.actionId = this.name+"-"+guid();
+        return newObject;
+    };
+
+    module.exports = Action
+}, {}], 81:[function(require,module,exports){
 
 var pixi = require('pixi'),
     Loop = require('game-loop'),
@@ -3089,9 +3134,11 @@ module.exports = {
 };
 },{}],85:[function(require,module,exports){
 
+        // ADD NEW CLASSES
 window.Pong = require('./Pong');
+window.Action = require('./Action');
 
-},{"./Pong":81}],86:[function(require,module,exports){
+},{"./Pong":81, "./Action":100}],86:[function(require,module,exports){
 
 module.exports = {
 
