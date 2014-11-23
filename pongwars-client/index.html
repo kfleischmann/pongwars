@@ -7,7 +7,23 @@
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="styles.css">
-	<script type="text/javascript">		
+	<script type="text/javascript">
+
+        var action1 = new Action("shrink-paddle",
+                function(){
+                   // otherPlayer.paddlee.size = 2
+                },
+                function(){
+                    //
+                },
+                function(){
+                    //otherPlayer.paddlee.size = 2
+                });
+
+
+        console.log( action1.create().actionId );
+        console.log( action1.create().actionId );
+        console.log( action1.create().actionId );
 
 		window.onload = function () {
 			var start=false;
@@ -26,18 +42,11 @@
 			}
 
 			function set_master(){
-				pong.players.a.addControls({
-                                     'up': 'up',
-                                     'down': 'down',
-                              });
-				
+				pong.players.a.addControls({'up': 'up', 'down': 'down' });
 			}
 
 			function set_slave(){
-		                pong.players.b.addControls({
-        	                        'up': 'up',
-                	                'down': 'down',
-                        	});
+		                pong.players.b.addControls({ 'up': 'up', 'down':'down'});
 				ball_disable();
 				
 			}
@@ -50,13 +59,14 @@
 				pong.players.a.y = paddle;
 			}
 		
-    			socket.on('connect',function() {
+            socket.on('connect',function() {
 				socket.emit("message", { user_id : user } );
 			 });
 			socket.on('init', function(msg){
 				is_master=msg.master;
 				console.log("master?: "+is_master);
 			});
+
 			socket.on('action', function(msg){
 				console.log("action:"+msg.action);
 				if( msg.action == 'start' ){
@@ -64,7 +74,8 @@
 					pong.start();	
 				}
 			});
-			socket.on('message', function(msg){
+
+            socket.on('message', function(msg){
 				if(!is_master){
 					ball_position(msg.ball.x, msg.ball.y);
 					master_update(msg.paddle);
@@ -88,7 +99,12 @@
 					set_slave();
 				}
 
-			});
+                pong.players.b.addAction(action1.create());
+                pong.players.b.addAction(action1.create());
+                pong.players.b.addAction(action1.create());
+
+
+            });
 			pong.on('beforeupdate', function () {
 				if(start){
 					var player = pong.players.a;
