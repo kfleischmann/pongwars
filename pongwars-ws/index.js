@@ -8,7 +8,8 @@ if ( args.indexOf('debug') ) {
     console.info = function() {};
 }
 
-clients = [];
+clients = []; // holds client sockets
+masters = []; // holds socket id of master
 
 io.on('connection', function(socket){
     // user joined
@@ -16,7 +17,9 @@ io.on('connection', function(socket){
     console.info('user joined (id=' + socket.id + ').');
 
     // send initialization data
-    master = clients.length == 1;
+    if (master = masters.length == 0) {
+        masters.push(socket.id);
+    }
     init_data = {
         "master": master
     };
@@ -34,10 +37,18 @@ io.on('connection', function(socket){
 
     // handle disconnection
     socket.on('disconnect', function() {
+        // remove client from clients
         var index = clients.indexOf(socket);
         if (index != -1) {
             clients.splice(index, 1);
             console.info('user left (id=' + socket.id + ')');
+        }
+
+        // remove client from masters
+        var index = masters.indexOf(socket.id);
+        if (index != -1) {
+            masters.splice(index, 1);
+            console.info('cleaning master (id=' + socket.id + ')');
         }
 
         // send stop signal
