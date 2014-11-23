@@ -2132,6 +2132,18 @@ Ball.prototype.bind = function () {
             self.lastUpdate = new Date().getTime();
         }
     });
+
+    this.game.on('getDirection', function () {
+        if (!self.removed) {
+            self.getDirection();
+        }
+    });
+
+    this.game.on('getLastPlayer', function () {
+        if (!self.removed) {
+            self.getLastPlayer();
+        }
+    });
 };
 
 Ball.prototype.render = function () {
@@ -2317,7 +2329,23 @@ Ball.prototype.rebound = function (dir) {
     this.velocity.x = -this.velocity.x * (dir ? 1 : -1);
 };
 
-module.exports = Ball;
+Ball.prototype.getDirection = function () {
+    return (this.velocity.y > 0) ? 'right' : 'left';
+};
+
+Ball.prototype.getLastPlayer = function () {
+    direction = this.getDirection();
+
+    for (var key in this.game.players) {
+        if (this.game.players.hasOwnProperty(key)) {
+            if (this.game.players[key].side == direction) {
+                return this.game.players[key];
+            }
+        }
+    }
+};
+
+    module.exports = Ball;
 
 },{"./config":84,"./utils":86,"geometry":27,"pixi":50}],77:[function(require,module,exports){
 
@@ -2693,6 +2721,7 @@ var pixi = require('pixi'),
     Loop = require('game-loop'),
     Player = require('./Player'),
     Ball = require('./Ball'),
+    Item = require('./Item'),
     Arena = require('./Arena'),
     StartScreen = require('./StartScreen'),
     PauseScreen = require('./PauseScreen'),
@@ -2781,6 +2810,32 @@ Pong.prototype.bind = function () {
     });
 };
 
+Pong.prototype.addItem = function (name) {
+
+    // sample object position ([0,0] is the center of the court)
+    object_radius = config.ITEM_SIZE;
+    max_x = this.wrapper.clientWidth / 2 - object_radius - config.LINES_DISTANCE;
+    min_x = - max_x + object_radius;
+    max_y = this.wrapper.clientHeight / 2 - object_radius;
+    min_y = - max_y + object_radius;
+    x = Math.round(Math.random() * (max_x - min_x) + min_x);
+    y = Math.round(Math.random() * (max_y - min_y) + min_y);
+
+    // create new item
+    var item = new Item(this, {
+        color: 'C0C0C0',
+        image: this.ballSettings.image,
+        size: object_radius*2,
+        speed: 0,
+        velocity: 0,
+        name: name
+    });
+    item.position(x, y);
+
+    //this.balls.push(item);
+    return item;
+};
+
 Pong.prototype.addBall = function () {
     var ball = new Ball(this, {
         color: this.ballSettings.color,
@@ -2796,6 +2851,7 @@ Pong.prototype.addBall = function () {
 
 Pong.prototype.start = function () {
     this.addBall();
+
     this.loop.play();
     this.started = true;
     this.emit('start', this);
@@ -2966,7 +3022,7 @@ Pong.prototype.win = function (message) {
 
 module.exports = Pong;
 
-},{"./Arena":75,"./Ball":76,"./MessageScreen":78,"./PauseScreen":79,"./Player":80,"./StartScreen":83,"./config":84,"./utils":86,"deep-extend":1,"event-emitter":5,"game-loop":25,"keycode":28,"pixi":50}],82:[function(require,module,exports){
+},{"./Arena":75,"./Ball":76,"./Item":87,"./MessageScreen":78,"./PauseScreen":79,"./Player":80,"./StartScreen":83,"./config":84,"./utils":86,"deep-extend":1,"event-emitter":5,"game-loop":25,"keycode":28,"pixi":50}],82:[function(require,module,exports){
 
 var pixi = require('pixi'),
     config = require('./config'),
@@ -3085,7 +3141,10 @@ module.exports = {
     LINES_COLOR: 0xEEEEEE,
     BALL_COLOR: 0xEEEEEE,
     BALL_SIZE: 10,
-    BALL_SPEED: 15
+    BALL_SPEED: 15,
+    ITEM_SIZE: 15,
+    ITEM_COLOR: 0xC0C0C0,
+    ITEM_SPEED: 0,
 };
 },{}],85:[function(require,module,exports){
 
@@ -3103,5 +3162,307 @@ module.exports = {
     }
 
 };
-},{}]},{},[85])
+},{}],87:[function(require,module,exports){
+
+    var pixi = require('pixi'),
+        geometry = require('geometry'),
+        config = require('./config'),
+        Ball = require('./Ball'),
+        parseOctal = require('./utils').parseOctal,
+        Item;
+
+    /* just copy and paste instead of inheritance -> the prototypish way to of life... */
+
+    Item = function (game, options) {
+        if (!options) {
+            options = {};
+        }
+
+        this.game =  game;
+        this.x = options.x || 0;
+        this.y = options.y || 0;
+        this.size = options.size || config.ITEM_SIZE;
+        this.setSpeed(options.speed || config.ITEM_SPEED);
+        this.setVelocity(options.velocity || [config.ITEM_SPEED, config.ITEM_SPEED]);
+        this.lastUpdate = new Date().getTime();
+        this.removed = false;
+        this.disabled = false;
+        this.color = parseOctal(options.color) || config.BALL_COLOR;
+        this.name = options.name || '';
+
+        this.graphics = new pixi.Graphics();
+
+        if (options.image) {
+            this.setImage(options.image);
+        }
+
+        this.render();
+        this.bind();
+    };
+
+    Item.prototype.bind = function () {
+        var self = this;
+
+        this.game.on('update', function () {
+            if (!self.removed) {
+                self.update();
+            }
+        });
+
+        this.game.on('resize', function () {
+            if (!self.removed) {
+                self.updatePosition();
+            }
+        });
+
+        this.game.on('setItemColor', function (color) {
+            if (!self.removed) {
+                self.setColor(color);
+            }
+        });
+
+        this.game.on('setItemImage', function (image) {
+            if (!self.removed) {
+                self.setImage(image);
+            }
+        });
+
+        this.game.on('setItemSize', function (size) {
+            if (!self.removed) {
+                self.setSize(size);
+            }
+        });
+
+        this.game.on('setItemSpeed', function (speed) {
+            if (!self.removed) {
+                self.setSpeed(speed);
+            }
+        });
+
+        this.game.on('setItemVelocity', function (velocity) {
+            if(!self.removed) {
+                self.setVelocity(velocity);
+            }
+        });
+
+        this.game.on('resume', function () {
+            if (!self.removed) {
+                self.lastUpdate = new Date().getTime();
+            }
+        });
+    };
+
+    Item.prototype.render = function () {
+        console.log('rendering');
+        if (this.sprite) {
+            this.graphics.removeChild(this.sprite);
+        }
+
+        if (this.image) {
+            this.sprite = pixi.Sprite.fromImage(this.image);
+            this.graphics.addChild(this.sprite);
+            this.sprite.width = this.size * 2;
+            this.sprite.position.x = - this.size;
+            this.sprite.position.y = - this.size;
+            this.sprite.height = this.size * 2;
+        } else {
+            this.graphics = new pixi.Graphics();
+            this.graphics.beginFill(this.color, 1);
+            this.graphics.drawCircle(0, 0, this.size);
+            this.graphics.endFill();
+        }
+
+        this.game.stage.addChild(this.graphics);
+
+        this.updatePosition();
+    };
+
+    Item.prototype.refresh = function () {
+        this.render();
+    };
+    Item.prototype.disable = function(val){
+        this.disabled = val;
+    };
+    Item.prototype.position = function(px,py){
+        this.x = px;
+        this.y = py;
+    };
+
+    Item.prototype.updatePosition = function () {
+        var elapsed = new Date().getTime() - this.lastUpdate;
+        if(!this.disabled){
+            this.x += (elapsed / 50) * this.velocity.x;
+            this.y += (elapsed / 50) * this.velocity.y;
+        }
+    };
+
+    Item.prototype.update = function () {
+        if (!this.removed) {
+            this.updatePosition();
+            this.graphics.position.x = this.game.renderer.width / 2 + this.x;
+            this.graphics.position.y = this.game.renderer.height / 2 + this.y;
+            this.lastUpdate = new Date().getTime();
+            this.checkCollisions();
+        }
+    };
+
+    Item.prototype.getBoundingBox = function () {
+        return new geometry.Rect(
+            {
+                x: this.game.renderer.width / 2 + this.x - this.size,
+                y: this.game.renderer.height / 2 + this.y - this.size
+            },
+            {
+                width: this.size * 2,
+                height: this.size * 2
+            }
+        );
+    };
+
+    Item.prototype.checkCollisions = function () {
+        if (this.checkWallsCollision()) {
+            return true;
+        }
+
+        for (var key in this.game.players) {
+            if (this.game.players.hasOwnProperty(key)) {
+                if (this.checkPlayerCollision(this.game.players[key])) {
+                    return true;
+                }
+            }
+        }
+
+        for (var key in this.game.balls) {
+            if (this.game.balls.hasOwnProperty(key)) {
+                if (this.checkBallCollision(this.game.balls[key])) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    };
+
+    Item.prototype.checkBallCollision = function (ball) {
+        var BB = this.getBoundingBox(),
+            targetBB = ball.getBoundingBox();
+
+        if (BB.intersectsRect(targetBB)) {
+
+            this.game.emit('collect', this);
+
+            console.log(this.name);
+            //ball.getLastPlayer()
+            this.remove();
+
+            return true;
+        }
+
+        return false;
+    };
+
+    Item.prototype.checkWallsCollision = function () {
+        var BB = this.getBoundingBox();
+
+        if (BB.origin.y < 0) {
+            this.bounce(0, 1);
+        } else if (BB.getMax().y > this.game.renderer.height) {
+            this.bounce(0, -1);
+        } else if (BB.origin.x < config.LINES_DISTANCE) {
+            this.game.players.b.addPoint();
+            this.game.restart(true, 1);
+        } else if (BB.origin.x > this.game.renderer.width - config.LINES_DISTANCE) {
+            this.game.players.a.addPoint();
+            this.game.restart(true, 0);
+        } else {
+            return false;
+        }
+
+        return true;
+    };
+
+    Item.prototype.checkPlayerCollision = function (player) {
+        var BB = this.getBoundingBox(),
+            targetBB = player.getBoundingBox();
+
+        if (BB.intersectsRect(targetBB)) {
+
+            player.emit('bounce', [ this ]);
+            this.game.emit('hit', this);
+
+            if (player.side === 'left') {
+                this.bounce(1, 0);
+                // Move ball away from paddle so in the incidence that the ball changes size, 
+                // the ball doesn't stay in contact with the paddle
+                this.x += this.size;
+            } else {
+                this.bounce(-1, 0);
+                // Move ball away from paddle so in the incidence that the ball changes size, 
+                // the ball doesn't stay in contact with the paddle
+                this.x -= (this.size / 2 + 1);
+            }
+
+            return true;
+        }
+    };
+
+    Item.prototype.remove = function () {
+        if (this.sprite) {
+            this.graphics.removeChild(this.sprite);
+        }
+
+        this.graphics.clear();
+        this.removed = true;
+    };
+
+    Item.prototype.bounce = function (multiplyX, multiplyY) {
+        this.game.emit('bounce', this, multiplyX, multiplyY);
+
+        if (multiplyX) {
+            this.velocity.x = Math.abs(this.velocity.x) * multiplyX;
+        }
+        if (multiplyY) {
+            this.velocity.y = Math.abs(this.velocity.y) * multiplyY;
+        }
+    };
+
+    Item.prototype.setColor = function (color) {
+        this.color = parseOctal(color);
+        this.refresh();
+    };
+
+    Item.prototype.setImage = function (image) {
+        this.image = image;
+        this.refresh();
+    };
+
+    Item.prototype.setSize = function (size) {
+        this.size = size;
+        this.refresh();
+    };
+
+    Item.prototype.setVelocity = function (velocity) {
+        this.velocity = {
+            x: velocity[0],
+            y: velocity[1]
+        };
+    };
+
+    Item.prototype.setSpeed = function (speed) {
+        this.speed = speed;
+
+        this.velocity = {
+            x: speed,
+            y: speed
+        };
+    };
+
+    Item.prototype.rebound = function (dir) {
+        this.x = 0;
+        this.velocity.x = -this.velocity.x * (dir ? 1 : -1);
+    };
+
+    module.exports = Item;
+
+},{"./config":84,"./utils":86,"./Ball":76,"geometry":27,"pixi":50}]},{},[85])
 ;
