@@ -2330,7 +2330,7 @@ Ball.prototype.rebound = function (dir) {
 };
 
 Ball.prototype.getDirection = function () {
-    return (this.velocity.y > 0) ? 'right' : 'left';
+    return (this.velocity.x > 0) ? 'right' : 'left';
 };
 
 Ball.prototype.getLastPlayer = function () {
