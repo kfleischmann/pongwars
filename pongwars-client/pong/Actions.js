@@ -56,7 +56,6 @@ ballControl.on('start', function(action){
 	action.old_ball_color = action.options.pong.balls[0].color;
 	action.options.pong.setBallColor( '#DC3F1C' );
 	//action.options.pong.refresh();
-
 });
 
 ballControl.on('stop', function(action){
