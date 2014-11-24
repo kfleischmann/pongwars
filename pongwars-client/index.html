@@ -51,10 +51,7 @@
                 if(e.which == 111) {
                     action=getPlayer().popAction('shrink-paddle');
                     if(action != null ){
-
-                        action.start();
-                        actions.push(action);
-
+                        runAction(action);
                         console.log(action.name);
                     } else {
                         console.log("no action");
@@ -106,6 +103,14 @@
                 return player;
             }
 
+            function runAction(action){
+                if(!is_bot) {
+                    socket.emit('message', {type: 'action', action_name: action.name});
+                }
+                action.start();
+                actions.push(action);
+            }
+
 
             socket.on('connect',function() {
 				socket.emit("message", { user_id : user } );
@@ -123,7 +128,7 @@
 			});
 
             socket.on('message', function(msg){
-                if(msg.type == "update") {
+                if(msg.type == 'update') {
                     if (!is_master) {
                         ball_position(msg.ball.x, msg.ball.y);
                         master_update(msg.paddle);
@@ -132,8 +137,11 @@
                         slave_update(msg.paddle);
                     }
                 }
-                if(msg.type == "action") {
-                    console.log("new action received")
+                else if(msg.type == 'action') {
+                    console.log("new action received "+msg.action_name)
+                    action=getOpponent().popAction(msg.action_name);
+                    runAction(action);
+
                 }
 			});
 
@@ -175,7 +183,7 @@
 
                     var player = pong.players.a;
 					if(!is_master) player = pong.players.b;
-                    msg =  {type: "update", user_id: user, paddle: player.y, ball: {x: pong.balls[0].x, y:pong.balls[0].y }};
+                    msg =  {type: 'update', user_id: user, paddle: player.y, ball: {x: pong.balls[0].x, y:pong.balls[0].y }};
 				}
 			});
 
