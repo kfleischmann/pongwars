@@ -2188,6 +2188,19 @@ Ball.prototype.updatePosition = function () {
     }
 };
 
+Ball.prototype.updateX = function (factor) {
+	var elapsed = new Date().getTime() - this.lastUpdate;
+	if(!this.disabled){
+		this.x += (elapsed / 50) * this.velocity.x*factor;
+	}
+};
+Ball.prototype.updateY = function (factor) {
+	var elapsed = new Date().getTime() - this.lastUpdate;
+	if(!this.disabled){
+		this.y += (elapsed / 50) * this.velocity.y*factor;
+	}
+};
+
 Ball.prototype.update = function () {
     if (!this.removed) {
         this.updatePosition();
@@ -2952,7 +2965,7 @@ Pong.prototype.doRandomUpdate = function (seed){
 		var pickable_actions= [
 			{ name:'shrink-paddle', color: '#ABC39F'},
 			{ name:'ball-control', color: '#445453'},
-			{ name:'revert-controls', color: '#7C574F'},
+			{ name:'invert-velocity', color: '#7C574F'},
 		];
 		this.item_index = (this.item_index + 1 ) % pickable_actions.length;
 
@@ -3309,7 +3322,7 @@ module.exports = {
     ITEM_SIZE: 20,
     ITEM_COLOR: 0xC0C0C0,
     ITEM_SPEED: 0,
-    ITEMS_AMOUNT: 1
+    ITEMS_AMOUNT: 5
 };
 },{}],85:[function(require,module,exports){
 

@@ -31,8 +31,6 @@
 			function game_start(){
 				start=true;
 				pong.start();
-
-                getPlayer().addAction( ballControl.create( {player: getPlayer(), pong : pong }) );
 			}
 
 			function bot_start(){
@@ -41,7 +39,7 @@
 			}
 
 			$(document).keyup(function(e) {
-                game_log("press key "+ e.which);
+                //game_log("press key "+ e.which);
 				// press i
 				if(e.which == 85) {
                     action = useAction( getPlayer(),'shrink-paddle' );
@@ -60,9 +58,9 @@
                         game_log("no action");
                     }
                 }
-                // press p
+                // press o
                 if(e.which == 79) {
-                    action = useAction( getPlayer(),'revert-controls' );
+                    action = useAction( getPlayer(),'invert-velocity' );
                     if(action != null ){
                         game_log(action.name);
                     } else {
@@ -197,11 +195,14 @@
 				if(item.name == "shrink-paddle" ) {
                     action = shrinkPaddleActions.create( {player: plr, pong : pong });
                 }
-                if(item.name == "revert-controls" ) {
-                    action = revertControls.create( {player: plr, pong : pong });
+                if(item.name == "invert-controls" ) {
+                    action = invertControls.create( {player: plr, pong : pong });
                 }
                 if(item.name == "ball-control" ) {
                     action = ballControl.create( {player: plr, pong : pong });
+                }
+                if(item.name == "invert-velocity" ) {
+                    action = invertVelocity.create( {player: plr, pong : pong });
                 }
 
 
@@ -213,16 +214,11 @@
 			});
 
 			pong.on('start', function() {
-				//pong.reset();
-                //pong.resetBalls();
-                //pong.items.clear;
-
                 if( is_master ) {
 					set_master();
 				} else {
 					set_slave();
 				}
-
 			});
 			pong.on('beforeupdate', function () {
 				if(start){
@@ -269,12 +265,12 @@
         <ul class="player-left">
             <li class="shrink-paddle"><div class="img shrink-item"></div><p>0</p></li>
             <li class="ball-control"><div class="img ballcontrol-item"></div><p>0</p></li>
-            <li class="revert-controls"><div class="img revertcontrols-item"></div><p>0</p></li>
+            <li class="invert-velocity"><div class="img invertcontrols-item"></div><p>0</p></li>
         </ul>
         <ul class="player-right">
             <li class="shrink-paddle"><div class="img shrink-item"></div><p>0</p></li>
             <li class="ball-control"><div class="img ballcontrol-item"></div><p>0</p></li>
-            <li class="revert-controls"><div class="img revertcontrols-item"></div><p>0</p></li>
+            <li class="invert-velocity"><div class="img invertcontrols-item"></div><p>0</p></li>
         </ul>
     </div>
 	<div id="pong" class="arena-width arena-height"></div>
