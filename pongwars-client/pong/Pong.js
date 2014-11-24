@@ -2585,10 +2585,16 @@ Player.prototype.addAction = function (action) {
     this.unused_actions.push(action);
 };
 
+Player.prototype.setHeight = function (height) {
+    this.height = height;
+};
+Player.prototype.getHeight = function () {
+    return this.height;
+};
+
+
 Player.prototype.useAction = function (actionId ) {
-
     // this.unused_actions
-
 };
 
 Player.prototype.addControls = function (controls) {
@@ -2730,9 +2736,31 @@ Player.prototype.setY = function (y) {
 module.exports = Player;
 
 },{"./Keyboard":77,"./ScoreDisplay":82,"./config":84,"./utils":86,"event-emitter":5,"geometry":27,"pixi":50}],
-100:[function(require,module,exports){
-    var Action;
 
+100:[function(require,module,exports){
+    var EventEmitter = require('event-emitter'),
+        ActivityFactory;
+
+    ActivityFactory = function(name){
+        EventEmitter.apply(this);
+        this.actionId = "factory";
+        this.name = name;
+    }
+
+    ActivityFactory.prototype = new EventEmitter();
+
+    ActivityFactory.prototype.bind = function(){
+        // empty binding
+    };
+    ActivityFactory.prototype.create = function(options){
+        var action = new Activity(this.name, this, options );
+        return action;
+    };
+
+    module.exports = ActivityFactory;
+
+}, {"event-emitter":5} ],
+101:[function(require,module,exports){
     var guid = (function() {
         function s4() {
             return Math.floor((1 + Math.random()) * 0x10000)
@@ -2745,22 +2773,63 @@ module.exports = Player;
         };
     })();
 
-    Action = function (name, onstart, onupdate, onend) {
-        this.actionId = "no-instance";
+
+    var EventEmitter = require('event-emitter'),
+        ActivityFactory = require('./ActivityFactory'),
+        Activity;
+
+
+    Activity = function (name, factory, options ) {
+        if (!options) {
+            options = {};
+        }
+
+        this.factory = factory;
         this.name = name;
-        this.onstart = onstart;
-        this.onupdate = onupdate;
-        this.onend = onend;
+        this.actionId = this.name+"-"+guid();
+        this.running = false;
+        this.garbage = false;
+        this.options = options;
+        this.do('create');
     };
 
-    Action.prototype.create = function(){
-        var newObject = jQuery.extend(true, {}, this);
-        newObject.actionId = this.name+"-"+guid();
-        return newObject;
+    Activity.prototype.do = function(method){
+        this.factory.emit(method, this );
+    }
+
+    Activity.prototype.create = function(){
+        this.do('create');
     };
 
-    module.exports = Action
-}, {}], 81:[function(require,module,exports){
+    Activity.prototype.destroy = function(){
+        this.do('destroy');
+        this.garbage = true;
+    };
+
+    Activity.prototype.start = function(){
+        this.do('start');
+        this.running = true;
+    };
+
+    Activity.prototype.stop = function(){
+        this.running = false;
+        this.do('stop');
+    };
+
+    Activity.prototype.isRunning = function(){
+        return this.running;
+    };
+
+    Activity.prototype.isGarbage = function(){
+        return this.garbage;
+    };
+
+    Activity.prototype.update = function(){
+        this.do('update');
+    };
+
+    module.exports = Activity;
+}, {"event-emitter":5, "./ActivityFactory":100}], 81:[function(require,module,exports){
 
 var pixi = require('pixi'),
     Loop = require('game-loop'),
@@ -3195,9 +3264,10 @@ module.exports = {
 
         // ADD NEW CLASSES
 window.Pong = require('./Pong');
-window.Action = require('./Action');
+window.Activity = require('./Activity');
+window.ActivityFactory = require('./ActivityFactory');
 
-},{"./Pong":81, "./Action":100}],86:[function(require,module,exports){
+},{"./Pong":81, "./ActivityFactory":100, "./Activity":101 }],86:[function(require,module,exports){
 
 module.exports = {
 
