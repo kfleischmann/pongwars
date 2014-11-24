@@ -128,6 +128,9 @@
 				pong.seed = msg.seed;
 				Math.seedrandom(msg.seed);
 			});
+            socket.on('random_event', function(msg) {
+                game_log("random-event "+msg.seed);
+            });
 
 			socket.on('action', function(msg){
                 game_log("action:"+msg.action);

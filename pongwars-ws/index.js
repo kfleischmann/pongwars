@@ -10,7 +10,18 @@ if ( args.indexOf('debug') ) {
 
 clients = []; // holds client sockets
 masters = []; // holds socket id of master
-seed = new Date().getTime();
+
+var random_event = function(){
+	seed = new Date().getTime();
+	data = {
+		"seed": seed
+	};
+	io.emit('random_event', data );
+	console.info("send random event with seed "+seed);
+	next=Math.floor((Math.random() * 5000) + 1);
+	setTimeout( random_event, next );
+};
+setTimeout( random_event, 1000 );
 
 io.on('connection', function(socket){
     // user joined
@@ -23,7 +34,6 @@ io.on('connection', function(socket){
     }
     init_data = {
         "master": master,
-        "seed": seed
     };
     console.info('sending master ' + master + ' to id=' + socket.id + ').');
     socket.emit('init', init_data);
