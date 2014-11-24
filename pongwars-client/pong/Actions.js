@@ -1,6 +1,5 @@
 var shrinkPaddleActions = new ActivityFactory("shrink-paddle");
-//----------------------------------
-//----------------------------------
+
 shrinkPaddleActions.on('create', function(action){
     console.log("action created "+action.actionId  );
 });
