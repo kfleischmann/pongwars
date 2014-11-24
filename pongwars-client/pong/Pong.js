@@ -2888,8 +2888,8 @@ Pong = function (wrapper) {
     this.totalBounces = 0;
     this.ballSettings = extend({}, ballDefaults);
     this.started = false;
-    this.seed = 0
-
+    this.seed = 0;
+	this.item_index =0;
     this.players = {
         a: new Player(this, { side: 'left' }),
         b: new Player(this, { side: 'right' })
@@ -2949,14 +2949,21 @@ Pong.prototype.doRandomUpdate = function (seed){
 		this.seed = seed;
 		Math.seedrandom(seed);
 
+		var pickable_actions= [
+			{ name:'shrink-paddle', color: '#ABC39F'},
+			{ name:'ball-control', color: '#445453'},
+			{ name:'revert-controls', color: '#7C574F'},
+		];
+		this.item_index = (this.item_index + 1 ) % pickable_actions.length;
+
 		for (i = 0; i < config.ITEMS_AMOUNT; i++) {
 			console.log("add item ");
-			this.addItem('shrink-paddle');
+			this.createRandomItem(pickable_actions[this.item_index].name, pickable_actions[this.item_index].color);
 		}
 	}
 };
 
-Pong.prototype.addItem = function (name) {
+Pong.prototype.createRandomItem = function (name, color ) {
 
     // sample object position ([0,0] is the center of the court)
     object_radius = config.ITEM_SIZE / 2;
@@ -2970,7 +2977,7 @@ Pong.prototype.addItem = function (name) {
 
     // create new item
     var item = new Item(this, {
-        color: 'C0C0C0',
+        color: color,
         image: this.ballSettings.image,
         size: config.ITEM_SIZE,
         speed: 0,

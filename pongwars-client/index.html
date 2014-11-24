@@ -173,13 +173,23 @@
 			resize();
 
 			pong.on('collect', function(item, plr ) {
+                var action = null;
+
                 // create action for player
 				if(item.name == "shrink-paddle" ) {
                     action = shrinkPaddleActions.create( {player: plr, pong : pong });
                 }
+                if(item.name == "revert-controls" ) {
+                    action = revertControls.create( {player: plr, pong : pong });
+                }
+                if(item.name == "ball-control" ) {
+                    action = ballControl.create( {player: plr, pong : pong });
+                }
+
+
                 //update game state
                 plr.addAction(action);
-                action_count = plr.getActions("shrink-paddle").length;
+                action_count = plr.getActions(item.name).length;
                 game_log(plr.side + " player ("+action_count+") collects new item "+item.name+" => "+action.actionId );
                 $("#state .player-"+plr.side+" ."+item.name+" p").html(action_count);
 			});
@@ -241,12 +251,12 @@
         <ul class="player-left">
             <li class="shrink-paddle"><div class="img shrink-item"></div><p>0</p></li>
             <li class="ball-control"><div class="img ballcontrol-item"></div><p>0</p></li>
-            <li class="revert-control"><div class="img revertcontrols-item"></div><p>0</p></li>
+            <li class="revert-controls"><div class="img revertcontrols-item"></div><p>0</p></li>
         </ul>
         <ul class="player-right">
             <li class="shrink-paddle"><div class="img shrink-item"></div><p>0</p></li>
             <li class="ball-control"><div class="img ballcontrol-item"></div><p>0</p></li>
-            <li class="revert-control"><div class="img revertcontrols-item"></div><p>0</p></li>
+            <li class="revert-controls"><div class="img revertcontrols-item"></div><p>0</p></li>
         </ul>
     </div>
 	<div id="pong" class="arena-width arena-height"></div>
