@@ -24,6 +24,7 @@
         shrinkPaddleActions.on('stop', function(action){
             console.log("action stopped "+action.actionId  );
             action.options.player.setHeight( action.oldHeight );
+            action.destroy();
         });
 
         shrinkPaddleActions.on('destroy', function(action){
