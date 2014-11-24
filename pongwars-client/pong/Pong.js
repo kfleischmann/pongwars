@@ -2557,10 +2557,16 @@ Player.prototype.addAction = function (action) {
     this.unused_actions.push(action);
 };
 
+Player.prototype.setHeight = function (height) {
+    this.height = height;
+};
+Player.prototype.getHeight = function () {
+    return this.height;
+};
+
+
 Player.prototype.useAction = function (actionId ) {
-
     // this.unused_actions
-
 };
 
 Player.prototype.addControls = function (controls) {
@@ -2712,13 +2718,14 @@ module.exports = Player;
         this.actionId = "factory";
         this.name = name;
     }
+
     ActivityFactory.prototype = new EventEmitter();
 
     ActivityFactory.prototype.bind = function(){
         // empty binding
     };
-    ActivityFactory.prototype.create = function(){
-        var action = new Activity(this.name, this );
+    ActivityFactory.prototype.create = function(options){
+        var action = new Activity(this.name, this, options );
         return action;
     };
 
@@ -2744,17 +2751,22 @@ module.exports = Player;
         Activity;
 
 
-    Activity = function (name, factory ) {
+    Activity = function (name, factory, options ) {
+        if (!options) {
+            options = {};
+        }
+
         this.factory = factory;
         this.name = name;
         this.actionId = this.name+"-"+guid();
-        this.started = false;
-
+        this.running = false;
+        this.garbage = false;
+        this.options = options;
         this.do('create');
     };
 
-    Activity.prototype.do = function(action){
-        this.factory.emit(action, this );
+    Activity.prototype.do = function(method){
+        this.factory.emit(method, this );
     }
 
     Activity.prototype.create = function(){
@@ -2763,16 +2775,25 @@ module.exports = Player;
 
     Activity.prototype.destroy = function(){
         this.do('destroy');
+        this.garbage = true;
     };
 
     Activity.prototype.start = function(){
-        this.started = true;
         this.do('start');
+        this.running = true;
     };
 
     Activity.prototype.stop = function(){
-        this.started = false;
+        this.running = false;
         this.do('stop');
+    };
+
+    Activity.prototype.isRunning = function(){
+        return this.running;
+    };
+
+    Activity.prototype.isGarbage = function(){
+        return this.garbage;
     };
 
     Activity.prototype.update = function(){

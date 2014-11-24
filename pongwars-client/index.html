@@ -6,33 +6,49 @@
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 	<script type="text/javascript" src="pong/Pong.js"></script>
+    <script type="text/javascript" src="pong/Actions.js"></script>
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	<script type="text/javascript">
+        var pong = null;
+        var shrinkPaddleActions = new ActivityFactory("shrink-paddle");
 
-        var factory = new ActivityFactory("shrink-paddle");
-
-        factory.on('create', function(action){
-           console.log("action created "+action.actionId  );
+        shrinkPaddleActions.on('create', function(action){
+            console.log("action created "+action.actionId  );
+        });
+        shrinkPaddleActions.on('start', function(action){
+            console.log("action started "+action.actionId  );
+            action.oldHeight=action.options.player.getHeight();
+            action.duration = 1000;
+            action.options.player.setHeight(10);
+        });
+        shrinkPaddleActions.on('stop', function(action){
+            console.log("action stopped "+action.actionId  );
+            action.options.player.setHeight( action.oldHeight );
         });
 
-        factory.on('destroy', function(action){
+        shrinkPaddleActions.on('destroy', function(action){
             console.log("action destroy "+action.actionId  );
-        });
-        var action1 = factory.create();
-        var action2 = factory.create();
 
-        action1.destroy();
-        action2.destroy();
+        });
+
+        shrinkPaddleActions.on('update', function(action){
+            action.duration -= 1;
+            if(action.duration<=0){
+                action.stop();
+            }
+            console.log("action update "+action.actionId  );
+        });
 
 
         window.onload = function () {
+            pong = new Pong(document.getElementById('pong'));
 			var start=false;
 			var is_master = false;
             var is_bot = false;
 			var user = "user-"+(Math.floor(Math.random() * 100) + 1);
-			var pong = new Pong(document.getElementById('pong'));
 			var socket = io(':3000');
 			var msg = null;
+            var actions = [];
 
             function game_start(){
                 start=true;
@@ -46,6 +62,27 @@
             }
 
             $(document).keypress(function(e) {
+                console.log("press: "+ e.which);
+                // press v (verbose)
+                if(e.which == 118) {
+
+                    console.log( actions.length );
+                }
+
+
+                // press i
+                if(e.which == 105) {
+                    action=shrinkPaddleActions.create( {player : getOpponent() } );
+                    action.start();
+                    actions.push(action);
+                }
+                // press o
+                if(e.which == 111) {
+                    action=shrinkPaddleActions.create( {player : getPlayer() } );
+                    action.start();
+                    actions.push(action);
+                }
+                // press b
                 if(e.which == 98) {
                     is_bot=true;
                     bot_start();
@@ -77,6 +114,18 @@
 			function master_update(paddle){
                 pong.players.a.y = paddle;
 			}
+
+            function getPlayer(){
+                var player = pong.players.a;
+                if(!is_master) player = pong.players.b;
+                return player;
+            }
+
+            function getOpponent(){
+                var player = pong.players.b;
+                if(!is_master) player = pong.players.a;
+                return player;
+            }
 
 
             socket.on('connect',function() {
@@ -120,7 +169,19 @@
             });
 			pong.on('beforeupdate', function () {
 				if(start){
-					var player = pong.players.a;
+
+                    active_actions = [];
+                    actions.forEach(function(action) {
+                        action.update();
+                        if(!action.isGarbage()){
+                            active_actions.push((action));
+                        }
+                    });
+
+                    actions = active_actions;
+
+
+                    var player = pong.players.a;
 					if(!is_master) player = pong.players.b;
                     msg =  {user_id: user, paddle: player.y, ball: {x: pong.balls[0].x, y:pong.balls[0].y }};
 				}
