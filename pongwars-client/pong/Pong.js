@@ -2338,7 +2338,7 @@ Ball.prototype.getLastPlayer = function () {
 
     for (var key in this.game.players) {
         if (this.game.players.hasOwnProperty(key)) {
-            if (this.game.players[key].side == direction) {
+            if (this.game.players[key].side != direction) {
                 return this.game.players[key];
             }
         }
