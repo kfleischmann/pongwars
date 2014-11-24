@@ -6,13 +6,23 @@ shrinkPaddleActions.on('create', function(action){
 });
 shrinkPaddleActions.on('start', function(action){
     console.log("action started "+action.actionId  );
-    action.oldHeight=action.options.player.getHeight();
     action.duration = 1000;
-    action.options.player.setHeight(10);
+
+	// find the correct player to apply
+	action.active_player = action.options.player.side=="left"? action.options.pong.players.b : action.options.pong.players.a;
+
+	// remember the last paddle state
+	action.oldHeight=action.active_player.getHeight();
+
+	console.log("player: "+action.options.player.side+" executes action on "+action.active_player.side);
+
+	// apply
+	action.active_player.setHeight(10);
 });
+
 shrinkPaddleActions.on('stop', function(action){
     console.log("action stopped "+action.actionId  );
-    action.options.player.setHeight( action.oldHeight );
+    action.active_player.setHeight( action.oldHeight );
     action.destroy();
 });
 shrinkPaddleActions.on('destroy', function(action){

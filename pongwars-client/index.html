@@ -87,6 +87,13 @@
 				pong.players.a.y = paddle;
 			}
 
+            function getOpponentOfPlayer(plr){
+                if(plr.side == "left")
+                    return pong.players.b;
+                else
+                    return pong.players.a;
+            }
+
 			function getPlayer(){
 				var player = pong.players.a;
 				if(!is_master) player = pong.players.b;
@@ -129,7 +136,7 @@
 			});
             socket.on('random_event', function(msg) {
                 console.log("random-event");
-                game_log("random-event "+msg.seed);
+                //game_log("random-event "+msg.seed);
                 pong.doRandomUpdate(msg.seed);
             });
 
@@ -167,7 +174,7 @@
 			pong.on('collect', function(item, plr ) {
                 // create action for player
 				if(item.name == "shrink-paddle" ) {
-                    action = shrinkPaddleActions.create({player: getOpponent()});
+                    action = shrinkPaddleActions.create( {player: plr, pong : pong });
                 }
                 //update game state
                 plr.addAction(action);
