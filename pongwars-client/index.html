@@ -11,34 +11,6 @@
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	<script type="text/javascript">
         var pong = null;
-        var shrinkPaddleActions = new ActivityFactory("shrink-paddle");
-
-        shrinkPaddleActions.on('create', function(action){
-            console.log("action created "+action.actionId  );
-        });
-        shrinkPaddleActions.on('start', function(action){
-            console.log("action started "+action.actionId  );
-            action.oldHeight=action.options.player.getHeight();
-            action.duration = 1000;
-            action.options.player.setHeight(10);
-        });
-        shrinkPaddleActions.on('stop', function(action){
-            console.log("action stopped "+action.actionId  );
-            action.options.player.setHeight( action.oldHeight );
-            action.destroy();
-        });
-
-        shrinkPaddleActions.on('destroy', function(action){
-            console.log("action destroy "+action.actionId  );
-
-        });
-
-        shrinkPaddleActions.on('update', function(action){
-            action.duration -= 1;
-            if(action.duration<=0){
-                action.stop();
-            }
-        });
 
         window.onload = function () {
             pong = new Pong(document.getElementById('pong'));
@@ -72,22 +44,15 @@
 
                 // press i
                 if(e.which == 105) {
-                    action=shrinkPaddleActions.create( {player : getOpponent() } );
+                    //action=shrinkPaddleActions.create( {player : getOpponent() } );
                     //action.start();
-                    getPlayer().addAction(action);
+                    //getPlayer().addAction(action);
                 }
                 // press o
                 if(e.which == 111) {
-                    //action=shrinkPaddleActions.create( {player : getPlayer() } );
-                    //action.start();
-                    //actions.push(action);
-
                     action=getPlayer().popAction('shrink-paddle');
                     if(action != null ){
-
-                        action.start();
-                        actions.push(action);
-
+                        runAction(action);
                         console.log(action.name);
                     } else {
                         console.log("no action");
@@ -139,6 +104,14 @@
                 return player;
             }
 
+            function runAction(action){
+                if(!is_bot) {
+                    socket.emit('message', {type: 'action', action_name: action.name});
+                }
+                action.start();
+                actions.push(action);
+            }
+
 
             socket.on('connect',function() {
 				socket.emit("message", { user_id : user } );
@@ -158,13 +131,21 @@
 			});
 
             socket.on('message', function(msg){
-				if(!is_master){
-					ball_position(msg.ball.x, msg.ball.y);
-					master_update(msg.paddle);
-				}
-				else {
-					slave_update(msg.paddle);
-				}	
+                if(msg.type == 'update') {
+                    if (!is_master) {
+                        ball_position(msg.ball.x, msg.ball.y);
+                        master_update(msg.paddle);
+                    }
+                    else {
+                        slave_update(msg.paddle);
+                    }
+                }
+                else if(msg.type == 'action') {
+                    console.log("new action received "+msg.action_name)
+                    action=getOpponent().popAction(msg.action_name);
+                    runAction(action);
+
+                }
 			});
 
 			function resize () {
@@ -176,7 +157,7 @@
 
             pong.on('collect', function(item, plr ) {
                 if(item.name == "shrink-paddle" ) {
-                    action = shrinkPaddleActions.create({player: plr});
+                    action = shrinkPaddleActions.create({player: getOpponent() });
                     plr.addAction(action);
                 }
                 console.log("player collects new item "+item.name+" => "+action.actionId );
@@ -205,7 +186,7 @@
 
                     var player = pong.players.a;
 					if(!is_master) player = pong.players.b;
-                    msg =  {user_id: user, paddle: player.y, ball: {x: pong.balls[0].x, y:pong.balls[0].y }};
+                    msg =  {type: 'update', user_id: user, paddle: player.y, ball: {x: pong.balls[0].x, y:pong.balls[0].y }};
 				}
 			});
 
