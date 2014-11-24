@@ -56,22 +56,34 @@ ballControl.on('start', function(action){
 	action.old_ball_color = action.options.pong.balls[0].color;
 	action.ball_velocity = action.options.pong.balls[0].velocity;
 	action.options.pong.setBallColor( '#D7803B' );
+	function VZ(number){if(number<0) return -1; else return 1;}
 
 	action.keydownHandler = function(e) {
 		if(e.which==75){ // push up
-			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, 2*action.ball_velocity.y]);
+			velo=action.options.pong.balls[0].velocity;
+			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(action.ball_velocity.x) ,
+														-1.5*/*VZ(velo.y)*/Math.abs(action.ball_velocity.y)]);
+
 		}
 		if(e.which==77){ // push down
-			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, 0.5*action.ball_velocity.y]);
+			velo=action.options.pong.balls[0].velocity;
+			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(action.ball_velocity.x) ,
+														1.5*/*VZ(velo.y)*/Math.abs(action.ball_velocity.y)]);
+
 		}
 	};
 
 	action.keyupHandler = function(e) {
 		if(e.which==75){ // push up
-			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, 2*action.ball_velocity.y]);
+			velo=action.options.pong.balls[0].velocity;
+			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(action.ball_velocity.x) ,
+														VZ(velo.y)*Math.abs(action.ball_velocity.y)]);
+
 		}
 		if(e.which==77){ // push down
-			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, 0.5*action.ball_velocity.y]);
+			velo=action.options.pong.balls[0].velocity;
+			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(action.ball_velocity.x) ,
+														VZ(velo.y)*Math.abs(action.ball_velocity.y)]);
 		}
 	};
 	// remove handler
@@ -82,8 +94,10 @@ ballControl.on('start', function(action){
 ballControl.on('stop', function(action){
 	console.log("action stopped "+action.actionId  );
 	// set old color and velocity
+	function VZ(number){if(number<0) return -1; else return 1;}
 	action.options.pong.setBallColor(action.old_ball_color);
-	action.options.pong.balls[0].setVelocity([action.ball_velocity.x, action.ball_velocity.y]);
+	velo=action.options.pong.balls[0].velocity;
+	action.options.pong.balls[0].setVelocity([ VZ(velo.x)*Math.abs(action.ball_velocity.x) , VZ(velo.y)*Math.abs(action.ball_velocity.y)]);
 
 	// remove handler
 	$(document).unbind('keydown', action.keydownHandler);

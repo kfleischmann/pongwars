@@ -52,6 +52,9 @@
 .empty {
     width:20px;
 }
+.hidden {
+    display:none;
+}
 .shrink-item {
     background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAxklEQVQ4T2NkoBAwUqifYfAZwAb10i8cXmMHiv8D4t8weXQvdAElVIE4HIjRDQFpXg3EV4C4CpcBIkCJvUB8D80QmGYZoLgLEL9DNqAHzbkgQ+KhtoVB5dYB6UAgno+sGSQH8kIHmgFiQH4iEK8A4kioHMjpIUA8F4jfIKtHDwOQZpAXbkI1wwILFLgrgVgJiJ2RDUE3oBMoqYymGWYhzJBrQIFq5DBAdhErlAOPJjTvgQwBReMfXAagqSfMHXxJmbCb0VQAALJeISWRhOK6AAAAAElFTkSuQmCC');
     -ms-transform: rotate(90deg); /* IE 9 */
