@@ -35,7 +35,6 @@
 
 			function bot_start(){
                 game_log("bot activated");
-				socket.close();
 				game_start();
 			}
 
@@ -109,13 +108,16 @@
 
             function useAction(player, action_name){
                 action=getPlayer().popAction(action_name);
-                action_count = player.getActions(action_name).length;
-                game_log(player.side + " player ("+action_count+") collects new item "+action_name+" => "+action.actionId );
-                $("#state .player-"+player.side+" ."+action_name+" p").html(action_count);
+                if(action!=null) {
+                    action_count = player.getActions(action_name).length;
+                    game_log(player.side + " player (" + action_count + ") collects new item " + action_name + " => " + action.actionId);
+                    $("#state .player-" + player.side + " ." + action_name + " p").html(action_count);
 
-                // run action
-                runAction(action);
-                return action;
+                    // run action
+                    runAction(action);
+                } else {
+                    return action;
+                }
             }
 
 
@@ -125,11 +127,11 @@
 			socket.on('init', function(msg){
 				is_master=msg.master;
                 game_log("master?: "+is_master);
-				pong.seed = msg.seed;
-				Math.seedrandom(msg.seed);
 			});
             socket.on('random_event', function(msg) {
+                console.log("random-event");
                 game_log("random-event "+msg.seed);
+                pong.doRandomUpdate(msg.seed);
             });
 
 			socket.on('action', function(msg){

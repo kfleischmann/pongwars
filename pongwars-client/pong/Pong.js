@@ -2888,7 +2888,7 @@ Pong = function (wrapper) {
     this.totalBounces = 0;
     this.ballSettings = extend({}, ballDefaults);
     this.started = false;
-    this.seed = new Date().getTime();
+    this.seed = 0
 
     this.players = {
         a: new Player(this, { side: 'left' }),
@@ -2941,6 +2941,18 @@ Pong.prototype.bind = function () {
     });
 };
 
+Pong.prototype.doRandomUpdate = function (seed){
+	console.log("random-event "+seed);
+	this.seed = seed;
+	Math.seedrandom(seed);
+
+	for (i=0 ; i<config.ITEMS_AMOUNT ; i++ ) {
+		console.log("add item ");
+	    this.addItem('shrink-paddle');
+	}
+
+};
+
 Pong.prototype.addItem = function (name) {
 
     // sample object position ([0,0] is the center of the court)
@@ -2985,9 +2997,9 @@ Pong.prototype.start = function () {
     this.addBall();
 
     // add items to game
-    for (i=0 ; i<config.ITEMS_AMOUNT ; i++ ) {
-        this.addItem('shrink-paddle');
-    }
+	//for (i=0 ; i<config.ITEMS_AMOUNT ; i++ ) {
+	//    this.addItem('shrink-paddle');
+    //}
 
     this.loop.play();
     this.started = true;
@@ -3024,9 +3036,9 @@ Pong.prototype.update = function () {
     }
 
     // respawn items
-    if (this.items.length < config.ITEMS_AMOUNT) {
-        this.addItem('shrink-paddle');
-    }
+    //if (this.items.length < config.ITEMS_AMOUNT) {
+	//    this.addItem('shrink-paddle');
+    //}
 };
 
 Pong.prototype.refresh = function () {
@@ -3287,7 +3299,7 @@ module.exports = {
     ITEM_SIZE: 20,
     ITEM_COLOR: 0xC0C0C0,
     ITEM_SPEED: 0,
-    ITEMS_AMOUNT: 3
+    ITEMS_AMOUNT: 1
 };
 },{}],85:[function(require,module,exports){
 
