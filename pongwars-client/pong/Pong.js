@@ -2176,7 +2176,7 @@ Ball.prototype.refresh = function () {
 Ball.prototype.disable = function(val){
    this.disabled = val;
 };
-Ball.prototype.position = function(px,py){
+Ball.prototype.setPosition = function(px,py){
    this.x = px;
    this.y = py;
 };

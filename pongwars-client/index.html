@@ -64,9 +64,10 @@
 				pong.balls[0].disable(true);
 			}
 
-			function ball_position(px,py){	
-				pong.balls[0].position( px, py );
-			}
+			function ball_update(ball){
+				pong.balls[0].setPosition( ball.x, ball.y );
+                pong.balls[0].setVelocity( ball.velocity );
+            }
 
 			function set_master(){
 				pong.players.a.addControls({'up': 'up', 'down': 'down' });
@@ -144,7 +145,7 @@
 			socket.on('message', function(msg){
 				if(msg.type == 'update') {
 					if (!is_master) {
-						ball_position(msg.ball.x, msg.ball.y);
+                        ball_update(msg.ball);
 						master_update(msg.paddle);
 					}
 					else {
@@ -167,12 +168,10 @@
 			resize();
 
 			pong.on('collect', function(item, plr ) {
-
                 // create action for player
 				if(item.name == "shrink-paddle" ) {
                     action = shrinkPaddleActions.create({player: getOpponent()});
                 }
-
                 //update game state
                 plr.addAction(action);
                 action_count = plr.getActions("shrink-paddle").length;
