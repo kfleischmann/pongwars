@@ -2338,7 +2338,7 @@ Ball.prototype.getLastPlayer = function () {
 
     for (var key in this.game.players) {
         if (this.game.players.hasOwnProperty(key)) {
-            if (this.game.players[key].side == direction) {
+            if (this.game.players[key].side != direction) {
                 return this.game.players[key];
             }
         }
@@ -2868,6 +2868,7 @@ Pong = function (wrapper) {
     this.renderer = pixi.autoDetectRenderer();
     this.loop = new Loop();
     this.balls = [];
+    this.items = [];
     this.arena = new Arena(this);
     this.startScreen = new StartScreen(this);
     this.pauseScreen = new PauseScreen(this);
@@ -2952,7 +2953,7 @@ Pong.prototype.addItem = function (name) {
     });
     item.position(x, y);
 
-    //this.balls.push(item);
+    this.items.push(item);
     return item;
 };
 
@@ -2971,10 +2972,11 @@ Pong.prototype.addBall = function () {
 
 Pong.prototype.start = function () {
     this.addBall();
-    this.addItem('shrink-paddle');
-    this.addItem('shrink-paddle');
-    this.addItem('shrink-paddle');
-    this.addItem('shrink-paddle');
+
+    // add items to game
+    for (i=0 ; i<config.ITEMS_AMOUNT ; i++ ) {
+        this.addItem('shrink-paddle');
+    }
 
     this.loop.play();
     this.started = true;
@@ -3008,6 +3010,11 @@ Pong.prototype.update = function () {
         this.emit('beforeupdate', this);
         this.refresh();
         this.emit('update', this);
+    }
+
+    // respawn items
+    if (this.items.length < config.ITEMS_AMOUNT) {
+        this.addItem('shrink-paddle');
     }
 };
 
@@ -3269,6 +3276,7 @@ module.exports = {
     ITEM_SIZE: 15,
     ITEM_COLOR: 0xC0C0C0,
     ITEM_SPEED: 0,
+    ITEMS_AMOUNT: 3
 };
 },{}],85:[function(require,module,exports){
 
@@ -3300,6 +3308,18 @@ module.exports = {
 
     /* just copy and paste instead of inheritance -> the prototypish way to of life... */
 
+    var guid = (function() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        return function() {
+            return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+            s4() + '-' + s4() + s4() + s4();
+        };
+    })();
+
     Item = function (game, options) {
         if (!options) {
             options = {};
@@ -3316,6 +3336,7 @@ module.exports = {
         this.disabled = false;
         this.color = parseOctal(options.color) || config.BALL_COLOR;
         this.name = options.name || '';
+        this.id = guid();
 
         this.graphics = new pixi.Graphics();
 
@@ -3538,6 +3559,14 @@ module.exports = {
 
         this.graphics.clear();
         this.removed = true;
+
+        // remove item from item list
+        for (i = 0; i < this.game.items.length; i++) {
+            if (this.game.items[i].id == this.id) {
+                this.game.items.splice(i, 1);
+                break;
+            }
+        }
     };
 
     Item.prototype.bounce = function (multiplyX, multiplyY) {
