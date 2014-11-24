@@ -37,10 +37,7 @@
             if(action.duration<=0){
                 action.stop();
             }
-            console.log("action update "+action.actionId  );
         });
-
-        pong.game.shrinkPaddleActions = shrinkPaddleActions;
 
         window.onload = function () {
             pong = new Pong(document.getElementById('pong'));
@@ -75,14 +72,26 @@
                 // press i
                 if(e.which == 105) {
                     action=shrinkPaddleActions.create( {player : getOpponent() } );
-                    action.start();
-                    actions.push(action);
+                    //action.start();
+                    getPlayer().addAction(action);
                 }
                 // press o
                 if(e.which == 111) {
-                    action=shrinkPaddleActions.create( {player : getPlayer() } );
-                    action.start();
-                    actions.push(action);
+                    //action=shrinkPaddleActions.create( {player : getPlayer() } );
+                    //action.start();
+                    //actions.push(action);
+
+                    action=getPlayer().popAction('shrink-paddle');
+                    if(action != null ){
+
+                        action.start();
+                        actions.push(action);
+
+                        console.log(action.name);
+                    } else {
+                        console.log("no action");
+                    }
+
                 }
                 // press b
                 if(e.which == 98) {
@@ -161,6 +170,14 @@
 				pong.resize();
 			}
 			resize();
+
+            pong.on('collect', function(item, plr ) {
+                if(item.name == "shrink-paddle" ) {
+                    action = shrinkPaddleActions.create({player: plr});
+                    plr.addAction(action);
+                }
+                console.log("player collects new item "+item.name+" => "+action.actionId );
+            });
 
 			pong.on('start', function() {
 				if( is_master ) {

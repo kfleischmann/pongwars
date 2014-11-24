@@ -2562,7 +2562,7 @@ Player = function (game, options) {
     this.score = 0;
     this.scoreDisplay = new ScoreDisplay(this);
     this.color = config.PLAYER_COLOR;
-    this.unused_actions = [];
+    this.actions = [];
     this.used_actions = [];
 
     // actions
@@ -2582,7 +2582,18 @@ Player = function (game, options) {
 Player.prototype = new EventEmitter();
 
 Player.prototype.addAction = function (action) {
-    this.unused_actions.push(action);
+    this.actions.push(action);
+};
+
+Player.prototype.popAction = function ( name ) {
+    for(i = 0; i < this.actions.length; i++) {
+        if(this.actions[i].name == name ) {
+            var a = this.actions[i];
+            this.actions.splice( i, 1);
+            console.log("size:"+this.actions.length);
+            return a;
+        }//if
+    }//for
 };
 
 Player.prototype.setHeight = function (height) {
@@ -2590,11 +2601,6 @@ Player.prototype.setHeight = function (height) {
 };
 Player.prototype.getHeight = function () {
     return this.height;
-};
-
-
-Player.prototype.useAction = function (actionId ) {
-    // this.unused_actions
 };
 
 Player.prototype.addControls = function (controls) {
