@@ -40,13 +40,8 @@
 			}
 
 			$(document).keyup(function(e) {
-                //game_log("press: "+ e.which);
-
 				// press i
 				if(e.which == 73) {
-					//action=shrinkPaddleActions.create( {player : getOpponent() } );
-					//action.start();
-					//getPlayer().addAction(action);
 				}
 				// press o
 				if(e.which == 79) {
@@ -57,7 +52,6 @@
 					} else {
 						game_log("no action");
 					}
-
 				}
 				// press b
 				if(e.which == 66) {
@@ -156,12 +150,17 @@
 			resize();
 
 			pong.on('collect', function(item, plr ) {
-				if(item.name == "shrink-paddle" ) {
-					action = shrinkPaddleActions.create({player: getOpponent() });
-					plr.addAction(action);
 
-                    game_log(plr.side + " player ("+plr.getActions("shrink-paddle").length+") collects new item "+item.name+" => "+action.actionId );
-				}
+                // create action for player
+				if(item.name == "shrink-paddle" ) {
+                    action = shrinkPaddleActions.create({player: getOpponent()});
+                }
+
+                //update game state
+                plr.addAction(action);
+                action_count = plr.getActions("shrink-paddle").length;
+                game_log(plr.side + " player ("+action_count+") collects new item "+item.name+" => "+action.actionId );
+                $("#state .player-"+plr.side+" ."+item.name+" p").html(action_count);
 			});
 
 			pong.on('start', function() {
@@ -212,10 +211,10 @@
 <body>
     <div id="state" class="arena-width state-height">
         <ul class="player-left">
-            <li class="shrink-paddle"><p>0</p></li>
+            <li class="shrink-paddle"><div class="img shrink-item"></div><p>0</p></li>
         </ul>
         <ul class="player-right">
-            <li class="shrink-paddle"><p>0</p></li>
+            <li class="shrink-paddle"><div class="img shrink-item"></div><p>0</p></li>
         </ul>
     </div>
 	<div id="pong" class="arena-width arena-height"></div>

@@ -15,20 +15,27 @@
 }
 #state {
     height: 20px;
-    background-color:black;
+    background-color:white;
 }
 #state p {
-    color:white;
+    float:left;
+    color:black;
 }
 #state ul {
     margin: 0; padding: 0;
 }
 #state ul li {
     display:inline;
-    list-style: none;
     margin: 0; padding: 0;
 }
+#state ul li .img {
+    float:left;
+    width:16px;
+    height:16px;
+    margin-right: 10px;
+}
 #state ul li p {
+    float:left;
     margin:0px;
 }
 #state .player-left {
@@ -36,4 +43,7 @@
 }
 #state .player-right {
     float:right;
+}
+.shrink-item {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAxklEQVQ4T2NkoBAwUqifYfAZwAb10i8cXmMHiv8D4t8weXQvdAElVIE4HIjRDQFpXg3EV4C4CpcBIkCJvUB8D80QmGYZoLgLEL9DNqAHzbkgQ+KhtoVB5dYB6UAgno+sGSQH8kIHmgFiQH4iEK8A4kioHMjpIUA8F4jfIKtHDwOQZpAXbkI1wwILFLgrgVgJiJ2RDUE3oBMoqYymGWYhzJBrQIFq5DBAdhErlAOPJjTvgQwBReMfXAagqSfMHXxJmbCb0VQAALJeISWRhOK6AAAAAElFTkSuQmCC');
 }
