@@ -159,8 +159,9 @@
 				if(item.name == "shrink-paddle" ) {
 					action = shrinkPaddleActions.create({player: getOpponent() });
 					plr.addAction(action);
+
+                    game_log(plr.side + " player ("+plr.getActions("shrink-paddle").length+") collects new item "+item.name+" => "+action.actionId );
 				}
-                game_log(plr.side + " player collects new item "+item.name+" => "+action.actionId );
 			});
 
 			pong.on('start', function() {
@@ -182,7 +183,6 @@
 					});
 
 					actions = active_actions;
-
 
 					var player = pong.players.a;
 					if(!is_master) player = pong.players.b;
@@ -207,11 +207,17 @@
 			}, 10);
 			
 		};
-
-
 	</script>
 </head>
 <body>
+    <div id="state" class="arena-width state-height">
+        <ul class="player-left">
+            <li class="shrink-paddle"><p>0</p></li>
+        </ul>
+        <ul class="player-right">
+            <li class="shrink-paddle"><p>0</p></li>
+        </ul>
+    </div>
 	<div id="pong" class="arena-width arena-height"></div>
 	<div id="log" class="arena-width">
         <p>logs</p>

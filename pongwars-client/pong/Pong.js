@@ -2585,12 +2585,21 @@ Player.prototype.addAction = function (action) {
     this.actions.push(action);
 };
 
+Player.prototype.getActions = function ( name ) {
+	var found_actions = [];
+	for(i = 0; i < this.actions.length; i++) {
+		if(this.actions[i].name == name ) {
+			found_actions.push( this.actions[i] );
+		}//if
+	}//for
+	return found_actions;
+}
+
 Player.prototype.popAction = function ( name ) {
     for(i = 0; i < this.actions.length; i++) {
         if(this.actions[i].name == name ) {
             var a = this.actions[i];
             this.actions.splice( i, 1);
-            console.log("size:"+this.actions.length);
             return a;
         }//if
     }//for
