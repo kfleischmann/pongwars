@@ -3,68 +3,68 @@
 <head>
 	<title>pongwars</title>
 
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src=//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.3.10/seedrandom.min.js></script>
-    <script type="text/javascript" src="pong/Pong.js"></script>
-    <script type="text/javascript" src="pong/Actions.js"></script>
+	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script src=//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.3.10/seedrandom.min.js></script>
+	<script type="text/javascript" src="pong/Pong.js"></script>
+	<script type="text/javascript" src="pong/Actions.js"></script>
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	<script type="text/javascript">
-        var pong = null;
+		var pong = null;
 
-        window.onload = function () {
-            pong = new Pong(document.getElementById('pong'));
+		window.onload = function () {
+			pong = new Pong(document.getElementById('pong'));
 			var start=false;
 			var is_master = false;
-            var is_bot = false;
+			var is_bot = false;
 			var user = "user-"+(Math.floor(Math.random() * 100) + 1);
 			var socket = io(':3000');
 			var msg = null;
-            var actions = [];
+			var actions = [];
 
-            function game_start(){
-                start=true;
-                pong.start();
-            }
+			function game_start(){
+				start=true;
+				pong.start();
+			}
 
-            function bot_start(){
-                console.log("bot activated");
-                socket.close();
-                game_start();
-            }
+			function bot_start(){
+				console.log("bot activated");
+				socket.close();
+				game_start();
+			}
 
-            $(document).keypress(function(e) {
-                console.log("press: "+ e.which);
-                // press v (verbose)
-                if(e.which == 118) {
+			$(document).keypress(function(e) {
+				console.log("press: "+ e.which);
+				// press v (verbose)
+				if(e.which == 118) {
 
-                    console.log( actions.length );
-                }
+					console.log( actions.length );
+				}
 
 
-                // press i
-                if(e.which == 105) {
-                    //action=shrinkPaddleActions.create( {player : getOpponent() } );
-                    //action.start();
-                    //getPlayer().addAction(action);
-                }
-                // press o
-                if(e.which == 111) {
-                    action=getPlayer().popAction('shrink-paddle');
-                    if(action != null ){
-                        runAction(action);
-                        console.log(action.name);
-                    } else {
-                        console.log("no action");
-                    }
+				// press i
+				if(e.which == 105) {
+					//action=shrinkPaddleActions.create( {player : getOpponent() } );
+					//action.start();
+					//getPlayer().addAction(action);
+				}
+				// press o
+				if(e.which == 111) {
+					action=getPlayer().popAction('shrink-paddle');
+					if(action != null ){
+						runAction(action);
+						console.log(action.name);
+					} else {
+						console.log("no action");
+					}
 
-                }
-                // press b
-                if(e.which == 98) {
-                    is_bot=true;
-                    bot_start();
-                }
-            });
+				}
+				// press b
+				if(e.which == 98) {
+					is_bot=true;
+					bot_start();
+				}
+			});
 
 			function ball_disable(){
 				pong.balls[0].disable(true);
@@ -79,89 +79,89 @@
 			}
 
 			function set_slave(){
-                pong.players.b.addControls({ 'up': 'up', 'down':'down'});
+				pong.players.b.addControls({ 'up': 'up', 'down':'down'});
 				ball_disable();
 				
 			}
 						
 			function slave_update(paddle){
-                pong.players.b.y = paddle;
+				pong.players.b.y = paddle;
 			}
 
 			function master_update(paddle){
-                pong.players.a.y = paddle;
+				pong.players.a.y = paddle;
 			}
 
-            function getPlayer(){
-                var player = pong.players.a;
-                if(!is_master) player = pong.players.b;
-                return player;
-            }
+			function getPlayer(){
+				var player = pong.players.a;
+				if(!is_master) player = pong.players.b;
+				return player;
+			}
 
-            function getOpponent(){
-                var player = pong.players.b;
-                if(!is_master) player = pong.players.a;
-                return player;
-            }
+			function getOpponent(){
+				var player = pong.players.b;
+				if(!is_master) player = pong.players.a;
+				return player;
+			}
 
-            function runAction(action){
-                if(!is_bot) {
-                    socket.emit('message', {type: 'action', action_name: action.name});
-                }
-                action.start();
-                actions.push(action);
-            }
+			function runAction(action){
+				if(!is_bot) {
+					socket.emit('message', {type: 'action', action_name: action.name});
+				}
+				action.start();
+				actions.push(action);
+			}
 
 
-            socket.on('connect',function() {
+			socket.on('connect',function() {
 				socket.emit("message", { user_id : user } );
 			 });
 			socket.on('init', function(msg){
 				is_master=msg.master;
 				console.log("master?: "+is_master);
-                pong.seed = msg.seed;
-                Math.seedrandom(msg.seed);
+				pong.seed = msg.seed;
+				Math.seedrandom(msg.seed);
 			});
 
 			socket.on('action', function(msg){
 				console.log("action:"+msg.action);
 				if( msg.action == 'start' ){
-                    game_start();
+					game_start();
 				}
 			});
 
-            socket.on('message', function(msg){
-                if(msg.type == 'update') {
-                    if (!is_master) {
-                        ball_position(msg.ball.x, msg.ball.y);
-                        master_update(msg.paddle);
-                    }
-                    else {
-                        slave_update(msg.paddle);
-                    }
-                }
-                else if(msg.type == 'action') {
-                    console.log("new action received "+msg.action_name)
-                    action=getOpponent().popAction(msg.action_name);
-                    runAction(action);
+			socket.on('message', function(msg){
+				if(msg.type == 'update') {
+					if (!is_master) {
+						ball_position(msg.ball.x, msg.ball.y);
+						master_update(msg.paddle);
+					}
+					else {
+						slave_update(msg.paddle);
+					}
+				}
+				else if(msg.type == 'action') {
+					console.log("new action received "+msg.action_name)
+					action=getOpponent().popAction(msg.action_name);
+					runAction(action);
 
-                }
+				}
 			});
 
 			function resize () {
-                document.getElementById('pong').style.width = "1000px";
-                document.getElementById('pong').style.height = "600px";
+				document.getElementById('pong').style.width = "1000px";
+				document.getElementById('pong').style.height = "600px";
 				pong.resize();
 			}
 			resize();
 
-            pong.on('collect', function(item, plr ) {
-                if(item.name == "shrink-paddle" ) {
-                    action = shrinkPaddleActions.create({player: getOpponent() });
-                    plr.addAction(action);
-                }
-                console.log("player collects new item "+item.name+" => "+action.actionId );
-            });
+			pong.on('collect', function(item, plr ) {
+				if(item.name == "shrink-paddle" ) {
+					action = shrinkPaddleActions.create({player: getOpponent() });
+					plr.addAction(action);
+				}
+				console.log("player collects new item "+item.name+" => "+action.actionId );
+			});
 
 			pong.on('start', function() {
 				if( is_master ) {
@@ -169,36 +169,36 @@
 				} else {
 					set_slave();
 				}
-            });
+			});
 			pong.on('beforeupdate', function () {
 				if(start){
 
-                    active_actions = [];
-                    actions.forEach(function(action) {
-                        action.update();
-                        if(!action.isGarbage()){
-                            active_actions.push((action));
-                        }
-                    });
+					active_actions = [];
+					actions.forEach(function(action) {
+						action.update();
+						if(!action.isGarbage()){
+							active_actions.push((action));
+						}
+					});
 
-                    actions = active_actions;
+					actions = active_actions;
 
 
-                    var player = pong.players.a;
+					var player = pong.players.a;
 					if(!is_master) player = pong.players.b;
-                    msg =  {type: 'update', user_id: user, paddle: player.y, ball: {x: pong.balls[0].x, y:pong.balls[0].y }};
+					msg =  {type: 'update', user_id: user, paddle: player.y, ball: {x: pong.balls[0].x, y:pong.balls[0].y }};
 				}
 			});
 
-            pong.on('update', function(){
-               if(is_bot) {
-                   if(is_master){
-                       slave_update(pong.balls[0].y);
-                   }else {
-                       master_update(pong.balls[0].y);
-                   }
-               }
-            });
+			pong.on('update', function(){
+			   if(is_bot) {
+				   if(is_master){
+					   slave_update(pong.balls[0].y);
+				   }else {
+					   master_update(pong.balls[0].y);
+				   }
+			   }
+			});
 
 			setInterval( function(){ 
 				if( msg != null ){
