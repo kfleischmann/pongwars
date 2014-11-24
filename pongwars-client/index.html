@@ -22,45 +22,45 @@
 			var msg = null;
 			var actions = [];
 
+            function game_log(msg){
+                $("#log").append($("<p>"+msg+"</p>"));
+                var height = $("#log")[0].scrollHeight;
+                $("#log").scrollTop(height);
+            }
+
 			function game_start(){
 				start=true;
 				pong.start();
 			}
 
 			function bot_start(){
-				console.log("bot activated");
+                game_log("bot activated");
 				socket.close();
 				game_start();
 			}
 
-			$(document).keypress(function(e) {
-				console.log("press: "+ e.which);
-				// press v (verbose)
-				if(e.which == 118) {
-
-					console.log( actions.length );
-				}
-
+			$(document).keyup(function(e) {
+                //game_log("press: "+ e.which);
 
 				// press i
-				if(e.which == 105) {
+				if(e.which == 73) {
 					//action=shrinkPaddleActions.create( {player : getOpponent() } );
 					//action.start();
 					//getPlayer().addAction(action);
 				}
 				// press o
-				if(e.which == 111) {
+				if(e.which == 79) {
 					action=getPlayer().popAction('shrink-paddle');
 					if(action != null ){
 						runAction(action);
-						console.log(action.name);
+                        game_log(action.name);
 					} else {
-						console.log("no action");
+						game_log("no action");
 					}
 
 				}
 				// press b
-				if(e.which == 98) {
+				if(e.which == 66) {
 					is_bot=true;
 					bot_start();
 				}
@@ -118,13 +118,13 @@
 			 });
 			socket.on('init', function(msg){
 				is_master=msg.master;
-				console.log("master?: "+is_master);
+                game_log("master?: "+is_master);
 				pong.seed = msg.seed;
 				Math.seedrandom(msg.seed);
 			});
 
 			socket.on('action', function(msg){
-				console.log("action:"+msg.action);
+                game_log("action:"+msg.action);
 				if( msg.action == 'start' ){
 					game_start();
 				}
@@ -141,7 +141,7 @@
 					}
 				}
 				else if(msg.type == 'action') {
-					console.log("new action received "+msg.action_name)
+                    game_log("new action received "+msg.action_name)
 					action=getOpponent().popAction(msg.action_name);
 					runAction(action);
 
@@ -149,8 +149,8 @@
 			});
 
 			function resize () {
-				document.getElementById('pong').style.width = "1000px";
-				document.getElementById('pong').style.height = "600px";
+				document.getElementById('pong').style.width = "800px";
+				document.getElementById('pong').style.height = "500px";
 				pong.resize();
 			}
 			resize();
@@ -160,7 +160,7 @@
 					action = shrinkPaddleActions.create({player: getOpponent() });
 					plr.addAction(action);
 				}
-				console.log("player collects new item "+item.name+" => "+action.actionId );
+                game_log(plr.side + " player collects new item "+item.name+" => "+action.actionId );
 			});
 
 			pong.on('start', function() {
@@ -212,9 +212,9 @@
 	</script>
 </head>
 <body>
-	<div id="pong"></div>
-	<div class="panel">
-		Move with [ UP ], [ DOWN ]
+	<div id="pong" class="arena-width arena-height"></div>
+	<div id="log" class="arena-width">
+        <p>logs</p>
 	</div>
 </body>
 </html>
