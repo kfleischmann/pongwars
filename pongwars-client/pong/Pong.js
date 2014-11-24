@@ -2935,8 +2935,9 @@ Pong.prototype.bind = function () {
 Pong.prototype.addItem = function (name) {
 
     // sample object position ([0,0] is the center of the court)
-    object_radius = config.ITEM_SIZE;
-    max_x = this.wrapper.clientWidth / 2 - object_radius - config.LINES_DISTANCE;
+    object_radius = config.ITEM_SIZE / 2;
+    dist = config.PLAYER_MARGIN + config.BARS_WIDTH + config.LINES_DISTANCE
+    max_x = this.wrapper.clientWidth / 2 - object_radius - dist;
     min_x = - max_x + object_radius;
     max_y = this.wrapper.clientHeight / 2 - object_radius;
     min_y = - max_y + object_radius;
@@ -2947,7 +2948,7 @@ Pong.prototype.addItem = function (name) {
     var item = new Item(this, {
         color: 'C0C0C0',
         image: this.ballSettings.image,
-        size: object_radius*2,
+        size: config.ITEM_SIZE,
         speed: 0,
         velocity: 0,
         name: name
@@ -3274,7 +3275,7 @@ module.exports = {
     BALL_COLOR: 0xEEEEEE,
     BALL_SIZE: 10,
     BALL_SPEED: 15,
-    ITEM_SIZE: 15,
+    ITEM_SIZE: 20,
     ITEM_COLOR: 0xC0C0C0,
     ITEM_SPEED: 0,
     ITEMS_AMOUNT: 3
