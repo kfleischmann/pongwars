@@ -54,37 +54,38 @@ ballControl.on('start', function(action){
 	console.log("action started "+action.actionId  );
 	action.duration = 500;
 	action.old_ball_color = action.options.pong.balls[0].color;
-	action.options.pong.setBallColor( '#DC3F1C' );
-	//action.options.pong.refresh();
-	// k:75
-	// m:77
-	/*
-	action.options.ball_position ={ x : action.options.pong.balls[0].x,
-									y : action.options.pong.balls[0].y};
-	console.log(action.options.ball_position.x);
-	console.log(action.options.ball_position.y);
-	*/
+	action.ball_velocity = action.options.pong.balls[0].velocity;
+	action.options.pong.setBallColor( '#D7803B' );
 });
 
 ballControl.on('stop', function(action){
 	console.log("action stopped "+action.actionId  );
+	// set old color and velocity
 	action.options.pong.setBallColor(action.old_ball_color);
+	action.options.pong.balls[0].setVelocity([action.ball_velocity.x, action.ball_velocity.y]);
 	action.destroy();
 });
 
 ballControl.on('update', function(action){
 	action.duration -= 1;
-	// freeze ball
-	//action.options.pong.balls[0].setPosition( action.options.ball_position.x , action.options.ball_position.y);
-	/*
-	$(document).keyup(function(e) {
+
+	$(document).keydown(function(e) {
 		if(e.which==75){ // push up
-			//action.options.pong.balls[0].updateY(5);
+			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, 2*action.ball_velocity.y]);
 		}
 		if(e.which==77){ // push down
-			//action.options.pong.balls[0].updateY(-5);
+			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, 0.5*action.ball_velocity.y]);
 		}
-	});*/
+	});
+	$(document).keyup(function(e) {
+		if(e.which==75){ // push up
+			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, action.ball_velocity.y]);
+		}
+		if(e.which==77){ // push down
+			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, action.ball_velocity.y]);
+		}
+	});
+
 	if(action.duration<=0){
 		action.stop();
 	}

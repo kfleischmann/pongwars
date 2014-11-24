@@ -2188,19 +2188,6 @@ Ball.prototype.updatePosition = function () {
     }
 };
 
-Ball.prototype.updateX = function (factor) {
-	var elapsed = new Date().getTime() - this.lastUpdate;
-	if(!this.disabled){
-		this.x += (elapsed / 50) * this.velocity.x*factor;
-	}
-};
-Ball.prototype.updateY = function (factor) {
-	var elapsed = new Date().getTime() - this.lastUpdate;
-	if(!this.disabled){
-		this.y += (elapsed / 50) * this.velocity.y*factor;
-	}
-};
-
 Ball.prototype.update = function () {
     if (!this.removed) {
         this.updatePosition();
