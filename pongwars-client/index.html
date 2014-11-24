@@ -4,8 +4,8 @@
 	<title>pongwars</title>
 
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-	<script src=//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.3.10/seedrandom.min.js></script>
+	<script src="jquery-1.11.1.min.js"></script>
+	<script src="seedrandom.min.js"></script>
 	<script type="text/javascript" src="pong/Pong.js"></script>
 	<script type="text/javascript" src="pong/Actions.js"></script>
 	<link rel="stylesheet" type="text/css" href="styles.css">
@@ -39,20 +39,35 @@
 			}
 
 			$(document).keyup(function(e) {
+                //game_log("press key "+ e.which);
 				// press i
-				if(e.which == 73) {
-				}
-				// press o
-				if(e.which == 79) {
-
+				if(e.which == 85) {
                     action = useAction( getPlayer(),'shrink-paddle' );
-
 					if(action != null ){
                         game_log(action.name);
 					} else {
 						game_log("no action");
 					}
 				}
+                // press o
+                if(e.which == 73) {
+                    action = useAction( getPlayer(),'ball-control' );
+                    if(action != null ){
+                        game_log(action.name);
+                    } else {
+                        game_log("no action");
+                    }
+                }
+                // press o
+                if(e.which == 79) {
+                    action = useAction( getPlayer(),'invert-velocity' );
+                    if(action != null ){
+                        game_log(action.name);
+                    } else {
+                        game_log("no action");
+                    }
+                }
+
 				// press b
 				if(e.which == 66) {
 					is_bot=true;
@@ -122,8 +137,9 @@
 
                     // run action
                     runAction(action);
-                } else {
                     return action;
+                } else {
+                    game_log("error: invalid action ");
                 }
             }
 
@@ -173,28 +189,36 @@
 			resize();
 
 			pong.on('collect', function(item, plr ) {
+                var action = null;
+
                 // create action for player
 				if(item.name == "shrink-paddle" ) {
                     action = shrinkPaddleActions.create( {player: plr, pong : pong });
                 }
+                if(item.name == "invert-controls" ) {
+                    action = invertControls.create( {player: plr, pong : pong });
+                }
+                if(item.name == "ball-control" ) {
+                    action = ballControl.create( {player: plr, pong : pong });
+                }
+                if(item.name == "invert-velocity" ) {
+                    action = invertVelocity.create( {player: plr, pong : pong });
+                }
+
+
                 //update game state
                 plr.addAction(action);
-                action_count = plr.getActions("shrink-paddle").length;
+                action_count = plr.getActions(item.name).length;
                 game_log(plr.side + " player ("+action_count+") collects new item "+item.name+" => "+action.actionId );
                 $("#state .player-"+plr.side+" ."+item.name+" p").html(action_count);
 			});
 
 			pong.on('start', function() {
-				//pong.reset();
-                //pong.resetBalls();
-                //pong.items.clear;
-
                 if( is_master ) {
 					set_master();
 				} else {
 					set_slave();
 				}
-
 			});
 			pong.on('beforeupdate', function () {
 				if(start){
@@ -240,14 +264,18 @@
     <div id="state" class="arena-width state-height">
         <ul class="player-left">
             <li class="shrink-paddle"><div class="img shrink-item"></div><p>0</p></li>
+            <li class="ball-control"><div class="img ballcontrol-item"></div><p>0</p></li>
+            <li class="invert-velocity"><div class="img invertcontrols-item"></div><p>0</p></li>
         </ul>
         <ul class="player-right">
             <li class="shrink-paddle"><div class="img shrink-item"></div><p>0</p></li>
+            <li class="ball-control"><div class="img ballcontrol-item"></div><p>0</p></li>
+            <li class="invert-velocity"><div class="img invertcontrols-item"></div><p>0</p></li>
         </ul>
     </div>
 	<div id="pong" class="arena-width arena-height"></div>
 	<div id="log" class="arena-width">
-        <p>logs</p>
 	</div>
+    <div id="info">u,o,p - use items<br/>k,m - special keys for up/down  </div>
 </body>
 </html>

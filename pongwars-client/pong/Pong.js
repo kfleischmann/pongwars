@@ -2166,12 +2166,11 @@ Ball.prototype.render = function () {
     }
 
     this.game.stage.addChild(this.graphics);
-
-    this.updatePosition();
 };
 
 Ball.prototype.refresh = function () {
     this.render();
+	this.updatePosition();
 };
 Ball.prototype.disable = function(val){
    this.disabled = val;
@@ -2294,8 +2293,9 @@ Ball.prototype.bounce = function (multiplyX, multiplyY) {
 };
 
 Ball.prototype.setColor = function (color) {
-    this.color = parseOctal(color);
-    this.refresh();
+	this.graphics.clear();
+	this.color = parseOctal(color);
+	this.render();
 };
 
 Ball.prototype.setImage = function (image) {
@@ -2888,8 +2888,8 @@ Pong = function (wrapper) {
     this.totalBounces = 0;
     this.ballSettings = extend({}, ballDefaults);
     this.started = false;
-    this.seed = 0
-
+    this.seed = 0;
+	this.item_index =0;
     this.players = {
         a: new Player(this, { side: 'left' }),
         b: new Player(this, { side: 'right' })
@@ -2949,14 +2949,21 @@ Pong.prototype.doRandomUpdate = function (seed){
 		this.seed = seed;
 		Math.seedrandom(seed);
 
+		var pickable_actions= [
+			{ name:'shrink-paddle', color: '#ABC39F'},
+			{ name:'ball-control', color: '#445453'},
+			{ name:'invert-velocity', color: '#7C574F'},
+		];
+		this.item_index = (this.item_index + 1 ) % pickable_actions.length;
+
 		for (i = 0; i < config.ITEMS_AMOUNT; i++) {
 			console.log("add item ");
-			this.addItem('shrink-paddle');
+			this.createRandomItem(pickable_actions[this.item_index].name, pickable_actions[this.item_index].color);
 		}
 	}
 };
 
-Pong.prototype.addItem = function (name) {
+Pong.prototype.createRandomItem = function (name, color ) {
 
     // sample object position ([0,0] is the center of the court)
     object_radius = config.ITEM_SIZE / 2;
@@ -2970,7 +2977,7 @@ Pong.prototype.addItem = function (name) {
 
     // create new item
     var item = new Item(this, {
-        color: 'C0C0C0',
+        color: color,
         image: this.ballSettings.image,
         size: config.ITEM_SIZE,
         speed: 0,
@@ -3035,7 +3042,7 @@ Pong.prototype.update = function () {
     if (this.started) {
         this.emit('beforeupdate', this);
         this.refresh();
-        this.emit('update', this);
+		this.emit('update', this);
     }
 
     // respawn items
@@ -3302,7 +3309,7 @@ module.exports = {
     ITEM_SIZE: 20,
     ITEM_COLOR: 0xC0C0C0,
     ITEM_SPEED: 0,
-    ITEMS_AMOUNT: 1
+    ITEMS_AMOUNT: 5
 };
 },{}],85:[function(require,module,exports){
 
