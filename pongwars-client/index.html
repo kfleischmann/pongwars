@@ -39,20 +39,35 @@
 			}
 
 			$(document).keyup(function(e) {
+                //game_log("press key "+ e.which);
 				// press i
-				if(e.which == 73) {
-				}
-				// press o
-				if(e.which == 79) {
-
+				if(e.which == 85) {
                     action = useAction( getPlayer(),'shrink-paddle' );
-
 					if(action != null ){
                         game_log(action.name);
 					} else {
 						game_log("no action");
 					}
 				}
+                // press o
+                if(e.which == 73) {
+                    action = useAction( getPlayer(),'ball-control' );
+                    if(action != null ){
+                        game_log(action.name);
+                    } else {
+                        game_log("no action");
+                    }
+                }
+                // press p
+                if(e.which == 79) {
+                    action = useAction( getPlayer(),'revert-controls' );
+                    if(action != null ){
+                        game_log(action.name);
+                    } else {
+                        game_log("no action");
+                    }
+                }
+
 				// press b
 				if(e.which == 66) {
 					is_bot=true;
@@ -122,8 +137,9 @@
 
                     // run action
                     runAction(action);
-                } else {
                     return action;
+                } else {
+                    game_log("error: invalid action ");
                 }
             }
 

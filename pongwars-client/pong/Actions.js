@@ -52,19 +52,28 @@ ballControl.on('create', function(action){
 
 ballControl.on('start', function(action){
 	console.log("action started "+action.actionId  );
+	action.duration = 100;
+	action.old_ball_color = action.options.pong.balls[0].color;
+	action.options.pong.setBallColor( '#DC3F1C' );
+	//action.options.pong.refresh();
 
 });
 
 ballControl.on('stop', function(action){
 	console.log("action stopped "+action.actionId  );
+	action.options.pong.setBallColor(action.old_ball_color);
 	action.destroy();
+});
+
+ballControl.on('update', function(action){
+	action.duration -= 1;
+	if(action.duration<=0){
+		action.stop();
+	}
 });
 
 ballControl.on('destroy', function(action){
 	console.log("action destroy "+action.actionId  );
-});
-
-ballControl.on('update', function(action){
 });
 
 

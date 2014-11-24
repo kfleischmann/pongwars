@@ -2294,8 +2294,9 @@ Ball.prototype.bounce = function (multiplyX, multiplyY) {
 };
 
 Ball.prototype.setColor = function (color) {
-    this.color = parseOctal(color);
-    this.refresh();
+	this.graphics.clear();
+	this.color = parseOctal(color);
+	this.renderb();
 };
 
 Ball.prototype.setImage = function (image) {
@@ -3042,7 +3043,7 @@ Pong.prototype.update = function () {
     if (this.started) {
         this.emit('beforeupdate', this);
         this.refresh();
-        this.emit('update', this);
+		this.emit('update', this);
     }
 
     // respawn items
