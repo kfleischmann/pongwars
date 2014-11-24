@@ -45,9 +45,10 @@
 				}
 				// press o
 				if(e.which == 79) {
-					action=getPlayer().popAction('shrink-paddle');
+
+                    action = useAction( getPlayer(),'shrink-paddle' );
+
 					if(action != null ){
-						runAction(action);
                         game_log(action.name);
 					} else {
 						game_log("no action");
@@ -105,6 +106,17 @@
 				action.start();
 				actions.push(action);
 			}
+
+            function useAction(player, action_name){
+                action=getPlayer().popAction(action_name);
+                action_count = player.getActions(action_name).length;
+                game_log(player.side + " player ("+action_count+") collects new item "+action_name+" => "+action.actionId );
+                $("#state .player-"+player.side+" ."+action_name+" p").html(action_count);
+
+                // run action
+                runAction(action);
+                return action;
+            }
 
 
 			socket.on('connect',function() {
