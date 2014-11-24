@@ -2879,6 +2879,7 @@ Pong = function (wrapper) {
     this.totalBounces = 0;
     this.ballSettings = extend({}, ballDefaults);
     this.started = false;
+    this.seed = new Date().getTime();
 
     this.players = {
         a: new Player(this, { side: 'left' }),
