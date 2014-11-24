@@ -5,7 +5,8 @@
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-	<script type="text/javascript" src="pong/Pong.js"></script>
+    <script src=//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.3.10/seedrandom.min.js></script>
+    <script type="text/javascript" src="pong/Pong.js"></script>
     <script type="text/javascript" src="pong/Actions.js"></script>
 	<link rel="stylesheet" type="text/css" href="styles.css">
 	<script type="text/javascript">
@@ -118,6 +119,8 @@
 			socket.on('init', function(msg){
 				is_master=msg.master;
 				console.log("master?: "+is_master);
+                pong.seed = msg.seed;
+                Math.seedrandom(msg.seed);
 			});
 
 			socket.on('action', function(msg){

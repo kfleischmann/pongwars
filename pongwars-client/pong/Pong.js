@@ -2879,6 +2879,7 @@ Pong = function (wrapper) {
     this.totalBounces = 0;
     this.ballSettings = extend({}, ballDefaults);
     this.started = false;
+    this.seed = new Date().getTime();
 
     this.players = {
         a: new Player(this, { side: 'left' }),
@@ -2934,8 +2935,9 @@ Pong.prototype.bind = function () {
 Pong.prototype.addItem = function (name) {
 
     // sample object position ([0,0] is the center of the court)
-    object_radius = config.ITEM_SIZE;
-    max_x = this.wrapper.clientWidth / 2 - object_radius - config.LINES_DISTANCE;
+    object_radius = config.ITEM_SIZE / 2;
+    dist = config.PLAYER_MARGIN + config.BARS_WIDTH + config.LINES_DISTANCE
+    max_x = this.wrapper.clientWidth / 2 - object_radius - dist;
     min_x = - max_x + object_radius;
     max_y = this.wrapper.clientHeight / 2 - object_radius;
     min_y = - max_y + object_radius;
@@ -2946,7 +2948,7 @@ Pong.prototype.addItem = function (name) {
     var item = new Item(this, {
         color: 'C0C0C0',
         image: this.ballSettings.image,
-        size: object_radius*2,
+        size: config.ITEM_SIZE,
         speed: 0,
         velocity: 0,
         name: name
@@ -3273,7 +3275,7 @@ module.exports = {
     BALL_COLOR: 0xEEEEEE,
     BALL_SIZE: 10,
     BALL_SPEED: 15,
-    ITEM_SIZE: 15,
+    ITEM_SIZE: 20,
     ITEM_COLOR: 0xC0C0C0,
     ITEM_SPEED: 0,
     ITEMS_AMOUNT: 3
@@ -3618,5 +3620,68 @@ module.exports = {
 
     module.exports = Item;
 
-},{"./config":84,"./utils":86,"./Ball":76,"geometry":27,"pixi":50}]},{},[85])
+},{"./config":84,"./utils":86,"./Ball":76,"geometry":27,"pixi":50}],88:[function(require,module,exports){
+
+    var pixi = require('pixi'),
+        config = require('./config'),
+        extend = require('deep-extend'),
+        ItemDisplay;
+
+    ItemDisplay = function (player) {
+        this.player = player;
+        this.render();
+        this.bind();
+    };
+
+    ItemDisplay.prototype.bind = function () {
+        var self = this;
+
+        this.player.on('point', function () {
+            self.update();
+        });
+
+        this.player.game.on('setTextStyle', function (color) {
+            self.setTextStyle(color);
+        });
+    };
+
+    ItemDisplay.prototype.setTextStyle = function (style) {
+        style = extend(config.TEXT_STYLE, style);
+        this.text.setStyle(style);
+    };
+
+    ItemDisplay.prototype.render = function () {
+        this.text = new pixi.Text(this.player.score + '', config.TEXT_STYLE);
+
+        if (this.player.side === 'left') {
+            this.text.anchor.x = 1;
+        } else {
+            this.text.anchor.x = 0;
+        }
+
+        this.text.position.y = config.SCORES_MARGIN.y;
+        this.player.game.stage.addChild(this.text);
+    };
+
+    ItemDisplay.prototype.updatePosition = function () {
+        var renderer = this.player.game.renderer;
+
+        if (this.player.side === 'left') {
+            this.text.position.x = renderer.width / 2 - config.SCORES_MARGIN.x;
+        } else {
+            this.text.position.x = renderer.width / 2 + config.SCORES_MARGIN.x;
+        }
+    };
+
+    ItemDisplay.prototype.update = function () {
+        this.text.setText(this.player.score + '');
+    };
+
+    ItemDisplay.prototype.resize = function () {
+        this.updatePosition();
+    };
+
+    module.exports = ItemDisplay;
+
+},{"./config":84,"deep-extend":1,"pixi":50}]},{},[85])
 ;

@@ -10,6 +10,7 @@ if ( args.indexOf('debug') ) {
 
 clients = []; // holds client sockets
 masters = []; // holds socket id of master
+seed = new Date().getTime();
 
 io.on('connection', function(socket){
     // user joined
@@ -21,7 +22,8 @@ io.on('connection', function(socket){
         masters.push(socket.id);
     }
     init_data = {
-        "master": master
+        "master": master,
+        "seed": seed
     };
     console.info('sending master ' + master + ' to id=' + socket.id + ').');
     socket.emit('init', init_data);
@@ -57,6 +59,11 @@ io.on('connection', function(socket){
         };
         console.info('sending stop to all');
         io.emit('action', data);
+
+        if (clients.length == 0) {
+            // reset seed
+            seed = new Date().getTime();
+        }
     });
 
     // handle messages
