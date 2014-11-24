@@ -2971,6 +2971,10 @@ Pong.prototype.addBall = function () {
 
 Pong.prototype.start = function () {
     this.addBall();
+    this.addItem('shrink-paddle');
+    this.addItem('shrink-paddle');
+    this.addItem('shrink-paddle');
+    this.addItem('shrink-paddle');
 
     this.loop.play();
     this.started = true;
@@ -3472,10 +3476,8 @@ module.exports = {
 
         if (BB.intersectsRect(targetBB)) {
 
-            this.game.emit('collect', this);
-
-            console.log(this.name);
-            //ball.getLastPlayer()
+            player = ball.getLastPlayer();
+            this.game.emit('collect', this, player);
             this.remove();
 
             return true;
