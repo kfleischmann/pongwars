@@ -2942,15 +2942,18 @@ Pong.prototype.bind = function () {
 };
 
 Pong.prototype.doRandomUpdate = function (seed){
-	console.log("random-event "+seed);
-	this.seed = seed;
-	Math.seedrandom(seed);
+	if(!this.started) {
+		console.log("random-event " + seed+" but game is not started");
+	}else {
+		console.log("random-event " + seed);
+		this.seed = seed;
+		Math.seedrandom(seed);
 
-	for (i=0 ; i<config.ITEMS_AMOUNT ; i++ ) {
-		console.log("add item ");
-	    this.addItem('shrink-paddle');
+		for (i = 0; i < config.ITEMS_AMOUNT; i++) {
+			console.log("add item ");
+			this.addItem('shrink-paddle');
+		}
 	}
-
 };
 
 Pong.prototype.addItem = function (name) {
