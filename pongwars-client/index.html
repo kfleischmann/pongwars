@@ -107,7 +107,6 @@
 			}
 
 			function runAction(action){
-                socket.emit('message', {type: 'action', action_name: action.name});
 				action.start();
 				actions.push(action);
 			}
@@ -115,6 +114,8 @@
             function useAction(player, action_name){
                 action=getPlayer().popAction(action_name);
                 if(action!=null) {
+                    socket.emit('message', {type: 'action', action_name: action.name});
+
                     action_count = player.getActions(action_name).length;
                     game_log(player.side + " player (" + action_count + ") collects new item " + action_name + " => " + action.actionId);
                     $("#state .player-" + player.side + " ." + action_name + " p").html(action_count);
