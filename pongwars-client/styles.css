@@ -1,0 +1,17 @@
+#log p {
+    margin: 0;
+}
+#log {
+    overflow: scroll;
+    height: 100px;
+    width: 800px;
+    background-color:#c0c0c0;
+}
+
+.arena-width {
+    width:800px;
+}
+
+.arena-height {
+    width:500px;
+}
