@@ -56,6 +56,27 @@ ballControl.on('start', function(action){
 	action.old_ball_color = action.options.pong.balls[0].color;
 	action.ball_velocity = action.options.pong.balls[0].velocity;
 	action.options.pong.setBallColor( '#D7803B' );
+
+	action.keydownHandler = function(e) {
+		if(e.which==75){ // push up
+			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, 2*action.ball_velocity.y]);
+		}
+		if(e.which==77){ // push down
+			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, 0.5*action.ball_velocity.y]);
+		}
+	};
+
+	action.keyupHandler = function(e) {
+		if(e.which==75){ // push up
+			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, 2*action.ball_velocity.y]);
+		}
+		if(e.which==77){ // push down
+			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, 0.5*action.ball_velocity.y]);
+		}
+	};
+	// remove handler
+	$(document).bind('keydown', action.keydownHandler);
+	$(document).bind('keyup', action.keyupHandler);
 });
 
 ballControl.on('stop', function(action){
@@ -63,28 +84,16 @@ ballControl.on('stop', function(action){
 	// set old color and velocity
 	action.options.pong.setBallColor(action.old_ball_color);
 	action.options.pong.balls[0].setVelocity([action.ball_velocity.x, action.ball_velocity.y]);
+
+	// remove handler
+	$(document).unbind('keydown', action.keydownHandler);
+	$(document).unbind('keyup', action.keyupHandler);
+
 	action.destroy();
 });
 
 ballControl.on('update', function(action){
 	action.duration -= 1;
-
-	$(document).keydown(function(e) {
-		if(e.which==75){ // push up
-			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, 2*action.ball_velocity.y]);
-		}
-		if(e.which==77){ // push down
-			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, 0.5*action.ball_velocity.y]);
-		}
-	});
-	$(document).keyup(function(e) {
-		if(e.which==75){ // push up
-			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, action.ball_velocity.y]);
-		}
-		if(e.which==77){ // push down
-			action.options.pong.balls[0].setVelocity([action.ball_velocity.x, action.ball_velocity.y]);
-		}
-	});
 
 	if(action.duration<=0){
 		action.stop();
@@ -95,9 +104,7 @@ ballControl.on('destroy', function(action){
 	console.log("action destroy "+action.actionId  );
 });
 
-
 allowedActions[allowedActions.name] = ballControl;
-
 
 
 //============================================================
