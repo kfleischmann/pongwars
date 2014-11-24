@@ -1,5 +1,10 @@
-var shrinkPaddleActions = new ActivityFactory("shrink-paddle");
+var allowedActions = {};
 
+//============================================================
+// shrink the other paddle
+//============================================================
+
+var shrinkPaddleActions = new ActivityFactory("shrink-paddle");
 shrinkPaddleActions.on('create', function(action){
     console.log("action created "+action.actionId  );
 });
@@ -33,5 +38,67 @@ shrinkPaddleActions.on('update', function(action){
         action.stop();
     }
 });
+allowedActions[shrinkPaddleActions.name] = shrinkPaddleActions;
+
+//============================================================
+//let you controle the ball for some period of time
+//============================================================
 
 var ballControl = new ActivityFactory("ball-control");
+
+ballControl.on('create', function(action){
+	console.log("action created "+action.actionId  );
+});
+
+ballControl.on('start', function(action){
+	console.log("action started "+action.actionId  );
+
+});
+
+ballControl.on('stop', function(action){
+	console.log("action stopped "+action.actionId  );
+	action.destroy();
+});
+
+ballControl.on('destroy', function(action){
+	console.log("action destroy "+action.actionId  );
+});
+
+ballControl.on('update', function(action){
+});
+
+
+allowedActions[allowedActions.name] = ballControl;
+
+
+
+//============================================================
+// invert the controls of you opponent
+//============================================================
+
+var revertControls = new ActivityFactory("revert-controls");
+
+revertControls.on('create', function(action){
+	console.log("action created "+action.actionId  );
+});
+
+revertControls.on('start', function(action){
+	console.log("action started "+action.actionId  );
+
+});
+
+revertControls.on('stop', function(action){
+	console.log("action stopped "+action.actionId  );
+	action.destroy();
+});
+
+revertControls.on('destroy', function(action){
+	console.log("action destroy "+action.actionId  );
+});
+
+revertControls.on('update', function(action){
+});
+
+
+allowedActions[revertControls.name] = revertControls;
+

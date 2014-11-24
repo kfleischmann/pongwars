@@ -18,7 +18,7 @@ var random_event = function(){
 	};
 	io.emit('random_event', data );
 	console.info("send random event with seed "+seed);
-	next=Math.floor((Math.random() * 5000) + 1);
+	next=Math.floor((Math.random() * 10000) + 1);
 	setTimeout( random_event, next );
 };
 setTimeout( random_event, 1000 );

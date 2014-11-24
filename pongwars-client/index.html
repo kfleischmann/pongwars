@@ -4,8 +4,8 @@
 	<title>pongwars</title>
 
 	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-	<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-	<script src=//cdnjs.cloudflare.com/ajax/libs/seedrandom/2.3.10/seedrandom.min.js></script>
+	<script src="jquery-1.11.1.min.js"></script>
+	<script src="seedrandom.min.js"></script>
 	<script type="text/javascript" src="pong/Pong.js"></script>
 	<script type="text/javascript" src="pong/Actions.js"></script>
 	<link rel="stylesheet" type="text/css" href="styles.css">
@@ -240,9 +240,13 @@
     <div id="state" class="arena-width state-height">
         <ul class="player-left">
             <li class="shrink-paddle"><div class="img shrink-item"></div><p>0</p></li>
+            <li class="ball-control"><div class="img ballcontrol-item"></div><p>0</p></li>
+            <li class="revert-control"><div class="img revertcontrols-item"></div><p>0</p></li>
         </ul>
         <ul class="player-right">
             <li class="shrink-paddle"><div class="img shrink-item"></div><p>0</p></li>
+            <li class="ball-control"><div class="img ballcontrol-item"></div><p>0</p></li>
+            <li class="revert-control"><div class="img revertcontrols-item"></div><p>0</p></li>
         </ul>
     </div>
 	<div id="pong" class="arena-width arena-height"></div>
