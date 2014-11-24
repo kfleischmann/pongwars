@@ -2166,12 +2166,11 @@ Ball.prototype.render = function () {
     }
 
     this.game.stage.addChild(this.graphics);
-
-    this.updatePosition();
 };
 
 Ball.prototype.refresh = function () {
     this.render();
+	this.updatePosition();
 };
 Ball.prototype.disable = function(val){
    this.disabled = val;
@@ -2296,7 +2295,7 @@ Ball.prototype.bounce = function (multiplyX, multiplyY) {
 Ball.prototype.setColor = function (color) {
 	this.graphics.clear();
 	this.color = parseOctal(color);
-	this.renderb();
+	this.render();
 };
 
 Ball.prototype.setImage = function (image) {
