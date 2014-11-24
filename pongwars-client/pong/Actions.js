@@ -25,4 +25,4 @@ shrinkPaddleActions.on('update', function(action){
     }
 });
 
-var  ballControl = new ActivityFactory("ball-control");
+var ballControl = new ActivityFactory("ball-control");
