@@ -66,7 +66,7 @@
 
 			function ball_update(ball){
 				pong.balls[0].setPosition( ball.x, ball.y );
-                pong.balls[0].setVelocity( ball.velocity );
+                pong.balls[0].setVelocity( [ ball.velocity.x, ball.velocity.y] );
             }
 
 			function set_master(){
@@ -100,9 +100,7 @@
 			}
 
 			function runAction(action){
-				if(!is_bot) {
-					socket.emit('message', {type: 'action', action_name: action.name});
-				}
+                socket.emit('message', {type: 'action', action_name: action.name});
 				action.start();
 				actions.push(action);
 			}
@@ -156,7 +154,6 @@
                     game_log("new action received "+msg.action_name)
 					action=getOpponent().popAction(msg.action_name);
 					runAction(action);
-
 				}
 			});
 
