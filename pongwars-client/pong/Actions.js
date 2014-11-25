@@ -124,33 +124,26 @@ allowedActions[allowedActions.name] = ballControl;
 //============================================================
 // invert-velocity
 //============================================================
-
 var invertVelocity = new ActivityFactory("invert-velocity");
-
 invertVelocity.on('create', function(action){
 	console.log("action created "+action.actionId  );
 });
-
 invertVelocity.on('start', function(action){
 	console.log("action started "+action.actionId  );
 	velo = action.options.pong.balls[0].velocity;
 	action.options.pong.balls[0].setVelocity([velo.x, -velo.y]);
 	action.stop();
 });
-
 invertVelocity.on('stop', function(action){
 	console.log("action stopped "+action.actionId  );
 	action.destroy();
 });
-
 invertVelocity.on('destroy', function(action){
 	console.log("action destroy "+action.actionId  );
 });
 
 invertVelocity.on('update', function(action){
 });
-
-
 allowedActions[invertVelocity.name] = invertVelocity;
 
 
@@ -159,18 +152,13 @@ allowedActions[invertVelocity.name] = invertVelocity;
 //============================================================
 // invert controles the controls of you opponent
 //============================================================
-
 var invertControls = new ActivityFactory("invert-controls");
-
 invertControls.on('create', function(action){
 	console.log("action created "+action.actionId  );
 });
-
 invertControls.on('start', function(action){
 	console.log("action started "+action.actionId  );
-
 });
-
 invertControls.on('stop', function(action){
 	console.log("action stopped "+action.actionId  );
 	action.destroy();
@@ -182,6 +170,4 @@ invertControls.on('destroy', function(action){
 
 invertControls.on('update', function(action){
 });
-
-
 allowedActions[invertControls.name] = invertControls;

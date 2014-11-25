@@ -244,6 +244,7 @@
 			pong.on('update', function(){
 			   if(is_bot) {
 				   if(is_master){
+
 					   slave_update(pong.balls[0].y);
 				   }else {
 					   master_update(pong.balls[0].y);
@@ -274,7 +275,7 @@
         </ul>
     </div>
 	<div id="pong" class="arena-width arena-height"></div>
-	<div id="log" class="arena-width hidden"></div>
-    <div id="info" class="hidden">u,o,p - use items<br/>k,m - special keys for up/down <br/>b - starts bot </div>
+	<div id="log" class="arena-width"></div>
+    <div id="info" class="">u,o,p - use items<br/>k,m - special keys for up/down <br/>b - starts bot </div>
 </body>
 </html>
