@@ -2293,7 +2293,7 @@ Ball.prototype.bounce = function (multiplyX, multiplyY) {
 };
 
 Ball.prototype.setColor = function (color) {
-	this.graphics.clear();
+	this.graphics.remove();
 	this.color = parseOctal(color);
 	this.render();
 };

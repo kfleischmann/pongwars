@@ -62,13 +62,13 @@ ballControl.on('start', function(action){
 		if(e.which==75){ // push up
 			velo=action.options.pong.balls[0].velocity;
 			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
-														-1.5*/*VZ(velo.y)*/Math.abs(velo.y)]);
+														VZ(velo.y)*Math.abs(velo.y)]);
 
 		}
 		if(e.which==77){ // push down
 			velo=action.options.pong.balls[0].velocity;
 			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
-														1.5*/*VZ(velo.y)*/Math.abs(velo.y)]);
+														-VZ(velo.y)*Math.abs(velo.y)]);
 
 		}
 	};

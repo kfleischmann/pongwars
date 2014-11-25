@@ -17,6 +17,7 @@
 			var start=false;
 			var is_master = false;
 			var is_bot = false;
+            var bot_actions_cnt = 0;
 			var user = "user-"+(Math.floor(Math.random() * 100) + 1);
 			var socket = io(':3000');
 			var msg = null;
@@ -127,7 +128,7 @@
 			}
 
             function useAction(player, action_name){
-                action=getPlayer().popAction(action_name);
+                action=player.popAction(action_name);
                 if(action!=null) {
                     socket.emit('message', {type: 'action', action_name: action.name});
 
@@ -153,8 +154,16 @@
 			});
             socket.on('random_event', function(msg) {
                 console.log("random-event");
-                //game_log("random-event "+msg.seed);
+                game_log("random-event "+msg.seed);
                 pong.doRandomUpdate(msg.seed);
+                bot_actions_cnt++;
+                if(is_bot&&bot_actions_cnt%2 == 0){
+                    if( getOpponent().actions.length > 0 ){
+                        action_name = getOpponent().actions[0].name;
+                        game_log("bot action "+action_name);
+                        useAction(getOpponent(), action_name );
+                    }
+                }
             });
 
 			socket.on('action', function(msg){
