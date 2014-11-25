@@ -3,7 +3,7 @@
 <head>
 	<title>pongwars</title>
 
-	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+	<script src="socket.io-1.2.0.js"></script>
 	<script src="jquery-1.11.1.min.js"></script>
 	<script src="seedrandom.min.js"></script>
 	<script type="text/javascript" src="pong/Pong.js"></script>
@@ -22,6 +22,8 @@
 			var socket = io(':3000');
 			var msg = null;
 			var actions = [];
+            var selectedAction = 0;
+            var allowedActions = ['shrink-paddle', 'ball-control', 'invert-velocity'];
 
             function game_log(msg){
                 $("#log").append($("<p>"+msg+"</p>"));
@@ -40,19 +42,19 @@
 			}
 
 			$(document).keyup(function(e) {
-                //game_log("press key "+ e.which);
-				// press i
+
+                    // press u
 				if(e.which == 85) {
-                    action = useAction( getPlayer(),'shrink-paddle' );
-					if(action != null ){
-                        game_log(action.name);
-					} else {
-						game_log("no action");
-					}
+                    selectedAction = (selectedAction +1)%allowedActions.length;
+                    action_name = availableActions[allowedActions[selectedAction]].name;
+                    game_log( "select action "+action_name );
+                    $("#state ul li").removeClass('selected');
+                    $("#state ul.player-left li."+action_name).addClass('selected');
 				}
-                // press o
+                // press i
                 if(e.which == 73) {
-                    action = useAction( getPlayer(),'ball-control' );
+                    action_name = availableActions[allowedActions[selectedAction]].name;
+                    action = useAction( getPlayer(), action_name );
                     if(action != null ){
                         game_log(action.name);
                     } else {
@@ -61,12 +63,6 @@
                 }
                 // press o
                 if(e.which == 79) {
-                    action = useAction( getPlayer(),'invert-velocity' );
-                    if(action != null ){
-                        game_log(action.name);
-                    } else {
-                        game_log("no action");
-                    }
                 }
 
 				// press b
@@ -86,11 +82,11 @@
             }
 
 			function set_master(){
-				pong.players.a.addControls({'up': 'up', 'down': 'down' });
+				pong.players.a.addControls({'up': 'w', 'down': 's' });
 			}
 
 			function set_slave(){
-				pong.players.b.addControls({ 'up': 'up', 'down':'down'});
+				pong.players.b.addControls({ 'up': 'w', 'down':'s'});
 				ball_disable();
 				
 			}
@@ -279,7 +275,7 @@
 <body>
     <div id="state" class="arena-width state-height">
         <ul class="player-left">
-            <li class="shrink-paddle"><div class="img shrink-item"></div><p>0</p></li>
+            <li class="shrink-paddle selected"><div class="img shrink-item"></div><p>0</p></li>
             <li class="ball-control"><div class="img ballcontrol-item"></div><p>0</p></li>
             <li class="invert-velocity"><div class="img invertcontrols-item"></div><p>0</p></li>
         </ul>
@@ -291,6 +287,6 @@
     </div>
 	<div id="pong" class="arena-width arena-height"></div>
 	<div id="log" class="arena-width"></div>
-    <div id="info" class="">u,o,p - use items<br/>k,m - special keys for up/down <br/>b - starts bot </div>
+    <div id="info" class="">w/s up/down -> u - switch item, i use item<br/>arrows <br/>b - starts bot </div>
 </body>
 </html>
