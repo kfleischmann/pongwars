@@ -3312,7 +3312,7 @@ module.exports = {
     ITEM_SIZE: 20,
     ITEM_COLOR: 0xC0C0C0,
     ITEM_SPEED: 0,
-    ITEMS_AMOUNT: 5
+    ITEMS_AMOUNT: 2
 };
 },{}],85:[function(require,module,exports){
 

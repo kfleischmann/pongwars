@@ -76,14 +76,14 @@ ballControl.on('start', function(action){
 	action.keyupHandler = function(e) {
 		if(e.which==75){ // push up
 			velo=action.options.pong.balls[0].velocity;
-			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(action.ball_velocity.x) ,
-														VZ(velo.y)*Math.abs(action.ball_velocity.y)]);
+			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
+														VZ(velo.y)*Math.abs(velo.y)]);
 
 		}
 		if(e.which==77){ // push down
 			velo=action.options.pong.balls[0].velocity;
-			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(action.ball_velocity.x) ,
-														VZ(velo.y)*Math.abs(action.ball_velocity.y)]);
+			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
+														VZ(velo.y)*Math.abs(velo.y)]);
 		}
 	};
 	// remove handler
