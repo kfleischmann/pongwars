@@ -4,7 +4,7 @@ var allowedActions = {};
 // shrink the other paddle
 //============================================================
 
-var shrinkPaddleActions = new ActivityFactory("shrink-paddle");
+var shrinkPaddleActions = new ActivityFactory("shrink-paddle", true );
 shrinkPaddleActions.on('create', function(action){
     console.log("action created "+action.actionId  );
 });
@@ -44,7 +44,7 @@ allowedActions[shrinkPaddleActions.name] = shrinkPaddleActions;
 //let you controle the ball for some period of time
 //============================================================
 
-var ballControl = new ActivityFactory("ball-control");
+var ballControl = new ActivityFactory("ball-control", true );
 
 ballControl.on('create', function(action){
 	console.log("action created "+action.actionId  );
@@ -61,14 +61,14 @@ ballControl.on('start', function(action){
 	action.keydownHandler = function(e) {
 		if(e.which==75){ // push up
 			velo=action.options.pong.balls[0].velocity;
-			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(action.ball_velocity.x) ,
-														-1.5*/*VZ(velo.y)*/Math.abs(action.ball_velocity.y)]);
+			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
+														-1.5*/*VZ(velo.y)*/Math.abs(velo.y)]);
 
 		}
 		if(e.which==77){ // push down
 			velo=action.options.pong.balls[0].velocity;
-			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(action.ball_velocity.x) ,
-														1.5*/*VZ(velo.y)*/Math.abs(action.ball_velocity.y)]);
+			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
+														1.5*/*VZ(velo.y)*/Math.abs(velo.y)]);
 
 		}
 	};
@@ -124,7 +124,7 @@ allowedActions[allowedActions.name] = ballControl;
 //============================================================
 // invert-velocity
 //============================================================
-var invertVelocity = new ActivityFactory("invert-velocity");
+var invertVelocity = new ActivityFactory("invert-velocity", true );
 invertVelocity.on('create', function(action){
 	console.log("action created "+action.actionId  );
 });
@@ -147,12 +147,10 @@ invertVelocity.on('update', function(action){
 allowedActions[invertVelocity.name] = invertVelocity;
 
 
-
-
 //============================================================
-// invert controles the controls of you opponent
+// accelerate-ball
 //============================================================
-var invertControls = new ActivityFactory("invert-controls");
+var invertControls = new ActivityFactory("invert-controls", true );
 invertControls.on('create', function(action){
 	console.log("action created "+action.actionId  );
 });
@@ -171,3 +169,49 @@ invertControls.on('destroy', function(action){
 invertControls.on('update', function(action){
 });
 allowedActions[invertControls.name] = invertControls;
+
+
+//============================================================
+// accelerate-ball
+//============================================================
+var fastBall = new ActivityFactory("fast-ball", false );
+fastBall.on('create', function(action){
+	console.log("action created "+action.actionId  );
+	action.start();
+});
+fastBall.on('start', function(action){
+	console.log("action started "+action.actionId  );
+	action.duration = 500;
+	action.old_ball_color = action.options.pong.balls[0].color;
+	action.ball_velocity = action.options.pong.balls[0].velocity;
+	function VZ(number){if(number<0) return -1; else return 1;}
+
+	velo=action.options.pong.balls[0].velocity;
+
+	// accelerate
+	action.options.pong.balls[0].setVelocity([ 	1.5*VZ(velo.x)*Math.abs(action.ball_velocity.x) ,
+												1.5*VZ(velo.y)*Math.abs(action.ball_velocity.y)]);
+
+});
+fastBall.on('stop', function(action){
+	console.log("action stopped "+action.actionId  );
+
+	// normal-speed
+	action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(action.ball_velocity.x) ,
+												VZ(velo.y)*Math.abs(action.ball_velocity.y)]);
+
+	action.destroy();
+});
+
+fastBall.on('destroy', function(action){
+	console.log("action destroy "+action.actionId  );
+});
+
+fastBall.on('update', function(action){
+	action.duration -= 1;
+
+	if(action.duration<=0){
+		action.stop();
+	}
+});
+allowedActions[fastBall.name] = fastBall;

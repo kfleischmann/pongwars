@@ -182,8 +182,8 @@
 			});
 
 			function resize () {
-				document.getElementById('pong').style.width = "1000px";
-				document.getElementById('pong').style.height = "600px";
+				document.getElementById('pong').style.width = "1500px";
+				document.getElementById('pong').style.height = "800px";
 				pong.resize();
 			}
 			resize();
@@ -204,13 +204,19 @@
                 if(item.name == "invert-velocity" ) {
                     action = invertVelocity.create( {player: plr, pong : pong });
                 }
+                if(item.name == "fast-ball" ) {
+                    action = fastBall.create( {player: plr, pong : pong });
+                }
 
+                if(action.collectable ){
 
-                //update game state
-                plr.addAction(action);
-                action_count = plr.getActions(item.name).length;
-                game_log(plr.side + " player ("+action_count+") collects new item "+item.name+" => "+action.actionId );
-                $("#state .player-"+plr.side+" ."+item.name+" p").html(action_count);
+                    //update game state
+                    plr.addAction(action);
+                    action_count = plr.getActions(item.name).length;
+                    game_log(plr.side + " player ("+action_count+") collects new item "+item.name+" => "+action.actionId );
+                    $("#state .player-"+plr.side+" ."+item.name+" p").html(action_count);
+
+                }
 			});
 
 			pong.on('start', function() {

@@ -2756,11 +2756,12 @@ module.exports = Player;
     var EventEmitter = require('event-emitter'),
         ActivityFactory;
 
-    ActivityFactory = function(name){
+    ActivityFactory = function(name, collectable ){
         EventEmitter.apply(this);
         this.actionId = "factory";
         this.name = name;
-    }
+    	this.collectable = collectable;
+	}
 
     ActivityFactory.prototype = new EventEmitter();
 
@@ -2768,7 +2769,7 @@ module.exports = Player;
         // empty binding
     };
     ActivityFactory.prototype.create = function(options){
-        var action = new Activity(this.name, this, options );
+        var action = new Activity(this.name, this, this.collectable, options );
         return action;
     };
 
@@ -2794,7 +2795,7 @@ module.exports = Player;
         Activity;
 
 
-    Activity = function (name, factory, options ) {
+    Activity = function (name, factory, collectable, options ) {
         if (!options) {
             options = {};
         }
@@ -2805,6 +2806,7 @@ module.exports = Player;
         this.running = false;
         this.garbage = false;
         this.options = options;
+		this.collectable = collectable;
         this.do('create');
     };
 
@@ -2953,6 +2955,7 @@ Pong.prototype.doRandomUpdate = function (seed){
 			{ name:'shrink-paddle', color: '#ABC39F'},
 			{ name:'ball-control', color: '#445453'},
 			{ name:'invert-velocity', color: '#7C574F'},
+			{ name:'fast-ball', color: '#E5DD73'},
 		];
 		this.item_index = (this.item_index + 1 ) % pickable_actions.length;
 
