@@ -3006,6 +3006,7 @@ Pong.prototype.addBall = function () {
 };
 
 Pong.prototype.start = function () {
+	this.endScreen.hide();
 	while(pong.items.length>0){
 		pong.items[0].remove();
 	}
@@ -3081,6 +3082,7 @@ Pong.prototype.updateBackgroundSize = function () {
 };
 
 Pong.prototype.restart = function (addBall, dir) {
+	this.endScreen.hide();
     var ball;
 
     this.hits = 0;
@@ -3258,7 +3260,7 @@ var keycode = require('keycode'),
     StartScreen,
 
 StartScreen = function () {
-    this.message = 'PRESS ENTER';
+    this.message = 'PLEASE WAIT or \nSTART BOT with b';
     MessageScreen.apply(this, arguments);
 };
 
@@ -3280,11 +3282,11 @@ StartScreen.prototype.bind = function () {
     document.addEventListener('keydown', function (e) {
         var key = keycode(e.keyCode);
 
-        if (key === 'enter') {
+        /*if (key === 'enter') {
             if (!self.game.loop.playing) {
                 self.game.start();
             }
-        }
+        }*/
     });
 };
 
