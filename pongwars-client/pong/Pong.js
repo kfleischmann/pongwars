@@ -2070,7 +2070,7 @@ Ball = function (game, options) {
     this.lastUpdate = new Date().getTime();
     this.removed = false;
     this.disabled = false;
-    this.color = parseOctal(options.color) || config.BALL_COLOR;
+    this.color = options.color || config.BALL_COLOR;
 
     this.graphics = new pixi.Graphics();
 
@@ -2294,7 +2294,7 @@ Ball.prototype.bounce = function (multiplyX, multiplyY) {
 
 Ball.prototype.setColor = function (color) {
 	this.graphics.clear();
-	this.color = parseOctal(color);
+	this.color = color;
 	this.render();
 };
 
@@ -2735,7 +2735,7 @@ Player.prototype.setHeight = function (height) {
 };
 
 Player.prototype.setColor = function (color) {
-    this.color = parseOctal(color);
+    this.color = color;
     this.refresh();
     this.game.updateIfStill();
 };
@@ -2873,7 +2873,6 @@ var pixi = require('pixi'),
 
 Pong = function (wrapper) {
     EventEmitter.apply(this);
-
     this.wrapper = wrapper;
     this.stage = new pixi.Stage(config.BG_COLOR);
     this.renderer = pixi.autoDetectRenderer();
@@ -2944,7 +2943,7 @@ Pong.prototype.bind = function () {
 };
 
 Pong.prototype.doRandomUpdate = function (seed){
-	if(!this.started) {
+	if(!this.started || !this.loop.playing ) {
 		console.log("random-event " + seed+" but game is not started");
 	}else {
 		console.log("random-event " + seed);
@@ -2952,10 +2951,10 @@ Pong.prototype.doRandomUpdate = function (seed){
 		Math.seedrandom(seed);
 
 		var pickable_actions= [
-			{ name:'shrink-paddle', color: '#ABC39F'},
-			{ name:'ball-control', color: '#445453'},
-			{ name:'invert-velocity', color: '#7C574F'},
-			{ name:'fast-ball', color: '#E5DD73'},
+			{ name:'shrink-paddle', color: '0xABC39F'},
+			{ name:'ball-control', color: '0x445453'},
+			{ name:'invert-velocity', color: '0x7C574F'},
+			{ name:'fast-ball', color: '0xE5DD73'},
 		];
 		this.item_index = (this.item_index + 1 ) % pickable_actions.length;
 
@@ -3007,16 +3006,16 @@ Pong.prototype.addBall = function () {
 };
 
 Pong.prototype.start = function () {
-    this.addBall();
-
-    // add items to game
-	//for (i=0 ; i<config.ITEMS_AMOUNT ; i++ ) {
-	//    this.addItem('shrink-paddle');
-    //}
+	while(pong.items.length>0){
+		pong.items[0].remove();
+	}
+	this.seed = 0;
+	this.addBall();
 
     this.loop.play();
     this.started = true;
     this.emit('start', this);
+
 };
 
 Pong.prototype.pause = function () {
@@ -3117,11 +3116,11 @@ Pong.prototype.resetBalls = function () {
 };
 
 Pong.prototype.setBackgroundColor = function (color) {
-    if (this.renderer instanceof pixi.CanvasRenderer) {
-        color = color.split('#')[1];
-    } else {
-        color = parseOctal(color);
-    }
+    //if (this.renderer instanceof pixi.CanvasRenderer) {
+	//    color = color.split('#')[1];
+	//} else {
+        color = color;
+	//}
 
     this.stage.setBackgroundColor(color);
     this.updateIfStill();
@@ -3370,7 +3369,7 @@ module.exports = {
         this.lastUpdate = new Date().getTime();
         this.removed = false;
         this.disabled = false;
-        this.color = parseOctal(options.color) || config.BALL_COLOR;
+        this.color = options.color || config.BALL_COLOR;
         this.name = options.name || '';
         this.id = guid();
 
@@ -3617,7 +3616,7 @@ module.exports = {
     };
 
     Item.prototype.setColor = function (color) {
-        this.color = parseOctal(color);
+        this.color = color;
         this.refresh();
     };
 

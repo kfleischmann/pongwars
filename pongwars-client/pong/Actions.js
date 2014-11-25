@@ -55,7 +55,7 @@ ballControl.on('start', function(action){
 	action.duration = 500;
 	action.old_ball_color = action.options.pong.balls[0].color;
 	action.ball_velocity = action.options.pong.balls[0].velocity;
-	action.options.pong.setBallColor( '#D7803B' );
+	action.options.pong.setBallColor( '0xD7803B' );
 	function VZ(number){if(number<0) return -1; else return 1;}
 
 	action.keydownHandler = function(e) {
