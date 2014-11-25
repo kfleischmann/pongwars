@@ -26,6 +26,17 @@
             var allowedActions = ['shrink-paddle', 'ball-control', 'invert-velocity'];
             var maxScore = 10;
 
+
+            function game_action_switch(){
+                selectedAction = (selectedAction +1)%allowedActions.length;
+            }
+            function game_action_update(){
+                action_name = availableActions[allowedActions[selectedAction]].name;
+                game_log( "select action "+action_name );
+                $("#state ul li").removeClass('selected');
+                $("#state ul.player-"+getPlayer().side+" li."+action_name).addClass('selected');
+            }
+
             function game_log(msg){
                 $("#log").append($("<p>"+msg+"</p>"));
                 var height = $("#log")[0].scrollHeight;
@@ -36,6 +47,7 @@
                 start=true;
                 pong.restart();
                 pong.start();
+                game_action_update();
 			}
 
 			function bot_start(){
@@ -45,13 +57,10 @@
 
 			$(document).keyup(function(e) {
 
-                    // press space
+                // press space
 				if(e.which == 32) {
-                    selectedAction = (selectedAction +1)%allowedActions.length;
-                    action_name = availableActions[allowedActions[selectedAction]].name;
-                    game_log( "select action "+action_name );
-                    $("#state ul li").removeClass('selected');
-                    $("#state ul.player-"+getPlayer().side+" li."+action_name).addClass('selected');
+                    game_action_switch();
+                    game_action_update();
 				}
                 // press enter
                 if(e.which == 13) {
@@ -326,7 +335,7 @@
 <body>
     <div id="state" class="arena-width state-height">
         <ul class="player-left">
-            <li class="shrink-paddle selected"><div class="img shrink-item"></div><p>0</p></li>
+            <li class="shrink-paddle"><div class="img shrink-item"></div><p>0</p></li>
             <li class="ball-control"><div class="img ballcontrol-item"></div><p>0</p></li>
             <li class="invert-velocity"><div class="img invertcontrols-item"></div><p>0</p></li>
         </ul>
