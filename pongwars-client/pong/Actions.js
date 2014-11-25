@@ -1,4 +1,4 @@
-var allowedActions = {};
+var availableActions = {};
 
 //============================================================
 // shrink the other paddle
@@ -38,7 +38,7 @@ shrinkPaddleActions.on('update', function(action){
         action.stop();
     }
 });
-allowedActions[shrinkPaddleActions.name] = shrinkPaddleActions;
+availableActions[shrinkPaddleActions.name] = shrinkPaddleActions;
 
 //============================================================
 //let you controle the ball for some period of time
@@ -55,20 +55,22 @@ ballControl.on('start', function(action){
 	action.duration = 500;
 	action.old_ball_color = action.options.pong.balls[0].color;
 	action.ball_velocity = action.options.pong.balls[0].velocity;
-	action.options.pong.setBallColor( '#D7803B' );
+	action.options.pong.setBallColor( '0xD7803B' );
 	function VZ(number){if(number<0) return -1; else return 1;}
 
 	action.keydownHandler = function(e) {
-		if(e.which==77){ // push up
+		if(e.which==87){ // push up
 			velo=action.options.pong.balls[0].velocity;
 			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
 														Math.abs(velo.y)]);
 		}
-		if(e.which==75){ // push down
+		if(e.which==83){ // push down
 			velo=action.options.pong.balls[0].velocity;
 			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
-				-Math.abs(velo.y)]);
+														-Math.abs(velo.y)]);
 		}
+		// left 37
+		// left 39
 	};
 	// remove handler
 	$(document).bind('keydown', action.keydownHandler);
@@ -84,7 +86,6 @@ ballControl.on('stop', function(action){
 
 	// remove handler
 	$(document).unbind('keydown', action.keydownHandler);
-	//$(document).unbind('keyup', action.keyupHandler);
 
 	action.destroy();
 });
@@ -101,7 +102,7 @@ ballControl.on('destroy', function(action){
 	console.log("action destroy "+action.actionId  );
 });
 
-allowedActions[allowedActions.name] = ballControl;
+availableActions[ballControl.name] = ballControl;
 
 
 //============================================================
@@ -127,7 +128,7 @@ invertVelocity.on('destroy', function(action){
 
 invertVelocity.on('update', function(action){
 });
-allowedActions[invertVelocity.name] = invertVelocity;
+availableActions[invertVelocity.name] = invertVelocity;
 
 
 //============================================================
@@ -151,7 +152,7 @@ invertControls.on('destroy', function(action){
 
 invertControls.on('update', function(action){
 });
-allowedActions[invertControls.name] = invertControls;
+availableActions[invertControls.name] = invertControls;
 
 
 //============================================================
@@ -197,4 +198,4 @@ fastBall.on('update', function(action){
 		action.stop();
 	}
 });
-allowedActions[fastBall.name] = fastBall;
+availableActions[fastBall.name] = fastBall;

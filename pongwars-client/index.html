@@ -3,7 +3,7 @@
 <head>
 	<title>pongwars</title>
 
-	<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+	<script src="socket.io-1.2.0.js"></script>
 	<script src="jquery-1.11.1.min.js"></script>
 	<script src="seedrandom.min.js"></script>
 	<script type="text/javascript" src="pong/Pong.js"></script>
@@ -22,6 +22,9 @@
 			var socket = io(':3000');
 			var msg = null;
 			var actions = [];
+            var selectedAction = 0;
+            var allowedActions = ['shrink-paddle', 'ball-control', 'invert-velocity'];
+            var maxScore = 10;
 
             function game_log(msg){
                 $("#log").append($("<p>"+msg+"</p>"));
@@ -30,8 +33,9 @@
             }
 
 			function game_start(){
-				start=true;
-				pong.start();
+                start=true;
+                pong.restart();
+                pong.start();
 			}
 
 			function bot_start(){
@@ -40,19 +44,19 @@
 			}
 
 			$(document).keyup(function(e) {
-                //game_log("press key "+ e.which);
-				// press i
-				if(e.which == 85) {
-                    action = useAction( getPlayer(),'shrink-paddle' );
-					if(action != null ){
-                        game_log(action.name);
-					} else {
-						game_log("no action");
-					}
+
+                    // press space
+				if(e.which == 32) {
+                    selectedAction = (selectedAction +1)%allowedActions.length;
+                    action_name = availableActions[allowedActions[selectedAction]].name;
+                    game_log( "select action "+action_name );
+                    $("#state ul li").removeClass('selected');
+                    $("#state ul.player-"+getPlayer().side+" li."+action_name).addClass('selected');
 				}
-                // press o
-                if(e.which == 73) {
-                    action = useAction( getPlayer(),'ball-control' );
+                // press enter
+                if(e.which == 13) {
+                    action_name = availableActions[allowedActions[selectedAction]].name;
+                    action = useAction( getPlayer(), action_name );
                     if(action != null ){
                         game_log(action.name);
                     } else {
@@ -61,12 +65,6 @@
                 }
                 // press o
                 if(e.which == 79) {
-                    action = useAction( getPlayer(),'invert-velocity' );
-                    if(action != null ){
-                        game_log(action.name);
-                    } else {
-                        game_log("no action");
-                    }
                 }
 
 				// press b
@@ -127,6 +125,36 @@
 				actions.push(action);
 			}
 
+            function game_win(){
+                if (pong.players.a.score > pong.players.b.score )
+                    pong.win("player a won");
+                else
+                    pong.win("player b won");
+            }
+            function game_send_win(){
+                if (is_master) {
+                    socket.emit('message', {
+                        type: 'win'
+                    });
+                }
+            }
+            function game_send_score(){
+                if (is_master) {
+                    socket.emit( 'message', {
+                        type : 'score',
+                        scores : { player_a : pong.players.a.score, player_b : pong.players.b.score}
+                    });
+                }
+            }
+
+            function game_check_finished(){
+                if(pong.players.a.score>= maxScore || pong.players.b.score >= maxScore ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
             function useAction(player, action_name){
                 action=player.popAction(action_name);
                 if(action!=null) {
@@ -170,7 +198,7 @@
                 game_log("action:"+msg.action);
 				if( msg.action == 'start' ){
 					game_start();
-				}
+                }
 			});
 
 			socket.on('message', function(msg){
@@ -188,14 +216,35 @@
 					action=getOpponent().popAction(msg.action_name);
 					runAction(action);
 				}
+                else if(msg.type == 'score'){
+                    pong.players.a.score = msg.scores.player_a;
+                    pong.players.b.score = msg.scores.player_b;
+
+                    pong.players.a.scoreDisplay.update();
+                    pong.players.b.scoreDisplay.update();
+
+                    game_log("new score received "+ pong.players.a.score +" vs. "+ pong.players.b.score );
+                }
+                else if(msg.type == 'win'){
+                    game_win();
+               }
 			});
 
 			function resize () {
-				document.getElementById('pong').style.width = "1500px";
-				document.getElementById('pong').style.height = "800px";
+				document.getElementById('pong').style.width = "1000px";
+				document.getElementById('pong').style.height = "600px";
 				pong.resize();
 			}
 			resize();
+
+            pong.on('restart', function(){
+                game_send_score();
+                if(game_check_finished()){
+                    game_send_win();
+                    game_win();
+                } else {
+                }
+            });
 
 			pong.on('collect', function(item, plr ) {
                 var action = null;
@@ -218,13 +267,11 @@
                 }
 
                 if(action.collectable ){
-
                     //update game state
                     plr.addAction(action);
                     action_count = plr.getActions(item.name).length;
                     game_log(plr.side + " player ("+action_count+") collects new item "+item.name+" => "+action.actionId );
                     $("#state .player-"+plr.side+" ."+item.name+" p").html(action_count);
-
                 }
 			});
 
@@ -271,7 +318,7 @@
 				if( msg != null ){
 					socket.emit('message', msg );
 				};
-			}, 30);
+			}, 10);
 			
 		};
 	</script>
@@ -279,7 +326,7 @@
 <body>
     <div id="state" class="arena-width state-height">
         <ul class="player-left">
-            <li class="shrink-paddle"><div class="img shrink-item"></div><p>0</p></li>
+            <li class="shrink-paddle selected"><div class="img shrink-item"></div><p>0</p></li>
             <li class="ball-control"><div class="img ballcontrol-item"></div><p>0</p></li>
             <li class="invert-velocity"><div class="img invertcontrols-item"></div><p>0</p></li>
         </ul>
@@ -290,7 +337,7 @@
         </ul>
     </div>
 	<div id="pong" class="arena-width arena-height"></div>
-	<div id="log" class="arena-width"></div>
-    <div id="info" class="">u,o,p - use items<br/>k,m - special keys for up/down <br/>b - starts bot </div>
+	<div id="log" class="arena-width hidden"></div>
+    <div id="info" class="hidden">arrows - move, space switch item, enter use item<br/>w/s special chars <br/>b - starts bot </div>
 </body>
 </html>
