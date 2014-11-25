@@ -43,16 +43,16 @@
 
 			$(document).keyup(function(e) {
 
-                    // press u
-				if(e.which == 85) {
+                    // press space
+				if(e.which == 32) {
                     selectedAction = (selectedAction +1)%allowedActions.length;
                     action_name = availableActions[allowedActions[selectedAction]].name;
                     game_log( "select action "+action_name );
                     $("#state ul li").removeClass('selected');
                     $("#state ul.player-left li."+action_name).addClass('selected');
 				}
-                // press i
-                if(e.which == 73) {
+                // press enter
+                if(e.which == 13) {
                     action_name = availableActions[allowedActions[selectedAction]].name;
                     action = useAction( getPlayer(), action_name );
                     if(action != null ){
@@ -82,11 +82,11 @@
             }
 
 			function set_master(){
-				pong.players.a.addControls({'up': 'w', 'down': 's' });
+				pong.players.a.addControls({'up': 'up', 'down': 'down' });
 			}
 
 			function set_slave(){
-				pong.players.b.addControls({ 'up': 'w', 'down':'s'});
+				pong.players.b.addControls({ 'up': 'up', 'down':'down'});
 				ball_disable();
 				
 			}
@@ -287,6 +287,6 @@
     </div>
 	<div id="pong" class="arena-width arena-height"></div>
 	<div id="log" class="arena-width"></div>
-    <div id="info" class="">w/s up/down -> u - switch item, i use item<br/>arrows <br/>b - starts bot </div>
+    <div id="info" class="">arrows - move, space switch item, enter use item<br/>w/s special chars <br/>b - starts bot </div>
 </body>
 </html>

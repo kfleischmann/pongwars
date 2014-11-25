@@ -59,12 +59,12 @@ ballControl.on('start', function(action){
 	function VZ(number){if(number<0) return -1; else return 1;}
 
 	action.keydownHandler = function(e) {
-		if(e.which==40){ // push up
+		if(e.which==87){ // push up
 			velo=action.options.pong.balls[0].velocity;
 			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
 														Math.abs(velo.y)]);
 		}
-		if(e.which==38){ // push down
+		if(e.which==83){ // push down
 			velo=action.options.pong.balls[0].velocity;
 			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
 														-Math.abs(velo.y)]);
@@ -86,7 +86,6 @@ ballControl.on('stop', function(action){
 
 	// remove handler
 	$(document).unbind('keydown', action.keydownHandler);
-	//$(document).unbind('keyup', action.keyupHandler);
 
 	action.destroy();
 });
