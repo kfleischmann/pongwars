@@ -59,36 +59,19 @@ ballControl.on('start', function(action){
 	function VZ(number){if(number<0) return -1; else return 1;}
 
 	action.keydownHandler = function(e) {
-		if(e.which==75){ // push up
+		if(e.which==77){ // push up
 			velo=action.options.pong.balls[0].velocity;
 			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
-														VZ(velo.y)*Math.abs(velo.y)]);
-
+														Math.abs(velo.y)]);
 		}
-		if(e.which==77){ // push down
+		if(e.which==75){ // push down
 			velo=action.options.pong.balls[0].velocity;
 			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
-														-VZ(velo.y)*Math.abs(velo.y)]);
-
-		}
-	};
-
-	action.keyupHandler = function(e) {
-		if(e.which==75){ // push up
-			velo=action.options.pong.balls[0].velocity;
-			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
-														VZ(velo.y)*Math.abs(velo.y)]);
-
-		}
-		if(e.which==77){ // push down
-			velo=action.options.pong.balls[0].velocity;
-			action.options.pong.balls[0].setVelocity([ 	VZ(velo.x)*Math.abs(velo.x) ,
-														VZ(velo.y)*Math.abs(velo.y)]);
+				-Math.abs(velo.y)]);
 		}
 	};
 	// remove handler
 	$(document).bind('keydown', action.keydownHandler);
-	$(document).bind('keyup', action.keyupHandler);
 });
 
 ballControl.on('stop', function(action){
@@ -101,7 +84,7 @@ ballControl.on('stop', function(action){
 
 	// remove handler
 	$(document).unbind('keydown', action.keydownHandler);
-	$(document).unbind('keyup', action.keyupHandler);
+	//$(document).unbind('keyup', action.keyupHandler);
 
 	action.destroy();
 });
