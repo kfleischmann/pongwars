@@ -2544,7 +2544,7 @@ var pixi = require('pixi'),
             'up': null,
             'down': null
         },
-        speed: 300
+        speed: 500
     },
     Player;
 

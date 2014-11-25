@@ -17,15 +17,19 @@ shrinkPaddleActions.on('start', function(action){
 
 	// remember the last paddle state
 	action.oldHeight=action.active_player.getHeight();
+	action.oldspeed=action.active_player.speed;
 
 	console.log("player: "+action.options.player.side+" executes action on "+action.active_player.side);
 
 	// apply
-	action.active_player.setHeight(10);
+	action.active_player.setHeight(25);
+	action.active_player.setSpeed( action.oldspeed*2 );
 });
 
 shrinkPaddleActions.on('stop', function(action){
     console.log("action stopped "+action.actionId  );
+	// apply
+	action.active_player.setSpeed( action.oldspeed );
     action.active_player.setHeight( action.oldHeight );
     action.destroy();
 });
